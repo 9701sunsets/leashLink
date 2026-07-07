@@ -1,0 +1,33 @@
+idf_component_register(
+    SRCS
+        "app_main.c"
+        "../board/power.c"
+        "../drivers/hx711_driver.c"
+        "../drivers/gps_driver.c"
+        "../drivers/oled_driver.c"
+        "../drivers/servo_driver.c"
+        "../drivers/buzzer_driver.c"
+        "../drivers/motor_driver.c"
+        "../services/tension_service.c"
+        "../services/safety_service.c"
+        "../services/distance_service.c"
+        "../services/leash_control.c"
+        "../services/session_service.c"
+        "../services/cloud_service.c"
+        "../communication/espnow_handle.c"
+        "../communication/mqtt_client.c"
+        "../communication/ble_pairing.c"
+        "../tasks/task_tension.c"
+        "../tasks/task_safety.c"
+        "../tasks/task_actuator.c"
+        "../tasks/task_ui.c"
+        "../tasks/task_cloud.c"
+    INCLUDE_DIRS
+        "."
+        "../board"
+        "../drivers"
+        "../services"
+        "../communication"
+        "../tasks"
+)
+
