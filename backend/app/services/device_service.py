@@ -1,0 +1,37 @@
+from __future__ import annotations
+
+from app.db.repository import repository
+from app.models import (
+    DeviceRegisterRequest,
+    DeviceRegisterResponse,
+    DeviceStatusResponse,
+    StoredTelemetry,
+    TelemetryUpsertRequest,
+)
+from app.services.session_service import build_session_id
+
+
+def register_device(payload: DeviceRegisterRequest) -> DeviceRegisterResponse:
+    record = repository.register_device(payload.handle_id, payload.collar_id, payload.hardware)
+    return DeviceRegisterResponse(
+        pair_id=record.pair_id,
+        mqtt_topic_prefix=f"leashlink/{record.pair_id}",
+        created_at=record.created_at,
+    )
+
+
+def get_status(pair_id: str) -> DeviceStatusResponse:
+    status = repository.get_status(pair_id)
+    if status is None:
+        raise KeyError(pair_id)
+    return status
+
+
+def upsert_telemetry(payload: TelemetryUpsertRequest) -> StoredTelemetry:
+    telemetry = StoredTelemetry.model_validate(payload.model_dump())
+    repository.upsert_telemetry(telemetry)
+    return telemetry
+
+
+def ensure_session_id(session_id: str | None = None) -> str:
+    return session_id or build_session_id()

@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "firmware/handle_c3"
+		},
+		{
+			"path": "backend"
+		}
+	],
+	"settings": {}
+}
