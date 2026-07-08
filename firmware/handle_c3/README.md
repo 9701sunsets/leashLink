@@ -1,10 +1,10 @@
-# leashLink handle_c3 firmware
+# leashLink handle_s3 firmware
 
-Target: ESP32-C3 handle node.
+Target: ESP32-S3 handle node.
 
 This project follows the leashLink documents:
 
-- Handle node: ESP32-C3
+- Handle node: ESP32-S3
 - Collar node: ESP32-C5
 - Local safety loop: tension + collar acceleration -> lock leash -> collar feedback -> cloud event
 - Realtime link: ESP-NOW first, BLE for pairing/discovery, MQTT for cloud upload
@@ -12,7 +12,7 @@ This project follows the leashLink documents:
 ## Build
 
 ```powershell
-idf.py set-target esp32c3
+idf.py set-target esp32s3
 idf.py build
 idf.py flash monitor
 ```
