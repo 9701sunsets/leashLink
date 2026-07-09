@@ -1,0 +1,31 @@
+.config-card {
+  padding: 28rpx;
+  margin-bottom: 22rpx;
+}
+
+.title {
+  display: block;
+  font-size: 34rpx;
+  font-weight: 900;
+  color: #111827;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+  margin: 22rpx 0 10rpx;
+  font-size: 28rpx;
+  color: #374151;
+}
+
+.row text:last-child {
+  color: #111827;
+  font-weight: 800;
+}
+
+.save {
+  margin-top: 30rpx;
+}
+

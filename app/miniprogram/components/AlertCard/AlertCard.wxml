@@ -1,0 +1,16 @@
+<view class="alert-card {{tone}}">
+  <view class="head">
+    <status-badge label="{{label}}" tone="{{tone}}" />
+    <text class="time">{{timeText}}</text>
+  </view>
+  <text class="summary">{{event.summary}}</text>
+  <view class="metrics">
+    <text wx:if="{{event.metrics.tension_peak_n}}">峰值 {{event.metrics.tension_peak_n}}N</text>
+    <text wx:if="{{event.metrics.distance_m}}">距离 {{event.metrics.distance_m}}m</text>
+    <text wx:if="{{event.metrics.response_latency_ms}}">响应 {{event.metrics.response_latency_ms}}ms</text>
+  </view>
+  <view class="actions">
+    <text wx:for="{{event.actions}}" wx:key="*this">✓ {{item}}</text>
+  </view>
+</view>
+

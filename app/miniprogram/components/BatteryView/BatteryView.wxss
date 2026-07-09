@@ -1,0 +1,46 @@
+.battery {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.battery-body {
+  position: relative;
+  width: 92rpx;
+  height: 38rpx;
+  padding: 4rpx;
+  border: 3rpx solid #d1d5db;
+  border-radius: 10rpx;
+}
+
+.battery-head {
+  width: 6rpx;
+  height: 20rpx;
+  border-radius: 0 5rpx 5rpx 0;
+  background: #d1d5db;
+  order: 2;
+  margin-left: -10rpx;
+}
+
+.battery-fill {
+  height: 100%;
+  border-radius: 6rpx;
+  background: linear-gradient(90deg, #36c76c, #1677ff);
+}
+
+.battery-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.value {
+  font-size: 30rpx;
+  font-weight: 800;
+  color: #111827;
+}
+
+.label {
+  font-size: 22rpx;
+  color: #6b7280;
+}
+

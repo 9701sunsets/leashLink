@@ -1,0 +1,39 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  font-size: 44rpx;
+  font-weight: 900;
+}
+
+.filters {
+  display: flex;
+  gap: 14rpx;
+  margin: 28rpx 0;
+}
+
+.filters button {
+  height: 64rpx;
+  padding: 0 24rpx;
+  border-radius: 32rpx;
+  background: #ffffff;
+  color: #6b7280;
+  font-size: 26rpx;
+  line-height: 64rpx;
+}
+
+.filters .active {
+  background: #36c76c;
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+}
+

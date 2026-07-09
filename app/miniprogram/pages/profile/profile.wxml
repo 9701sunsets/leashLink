@@ -1,0 +1,14 @@
+<view class="page">
+  <view class="profile card">
+    <view class="avatar">LL</view>
+    <view>
+      <text class="name">{{userName}}</text>
+      <text class="dog">当前宠物：{{dogName}}</text>
+    </view>
+  </view>
+  <view class="section-title">账户</view>
+  <view class="item card">通知设置</view>
+  <view class="item card">设备共享</view>
+  <view class="item card">隐私与数据</view>
+</view>
+

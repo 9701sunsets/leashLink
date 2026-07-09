@@ -1,0 +1,29 @@
+.summary {
+  padding: 32rpx;
+}
+
+.title {
+  display: block;
+  font-size: 44rpx;
+  font-weight: 900;
+}
+
+.state {
+  display: block;
+  margin-top: 10rpx;
+  color: #36c76c;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18rpx;
+  margin-top: 22rpx;
+}
+
+.chart {
+  padding: 16rpx;
+}
+

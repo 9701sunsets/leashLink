@@ -1,0 +1,17 @@
+<view class="page">
+  <view class="summary card">
+    <text class="title">今日报告</text>
+    <text class="state">状态 {{report.health_state === 'healthy' ? '健康' : '需关注'}}</text>
+  </view>
+  <view class="grid">
+    <metric-card label="遛狗时间" value="{{report.duration_min}}" unit="min" tone="device" />
+    <metric-card label="距离" value="{{report.distance_km}}" unit="km" tone="safe" />
+    <metric-card label="步数" value="{{report.steps}}" unit="步" tone="safe" />
+    <metric-card label="最大张力" value="{{report.max_tension_n}}" unit="N" tone="{{report.max_tension_n >= 20 ? 'danger' : 'warn'}}" />
+  </view>
+  <view class="section-title">张力曲线</view>
+  <view class="chart card">
+    <tension-chart values="{{report.tension_series}}" />
+  </view>
+</view>
+

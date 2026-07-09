@@ -1,0 +1,11 @@
+<view class="battery">
+  <view class="battery-head"></view>
+  <view class="battery-body">
+    <view class="battery-fill" style="width: {{value}}%;"></view>
+  </view>
+  <view class="battery-meta">
+    <text class="value">{{value}}%</text>
+    <text class="label">{{label}}</text>
+  </view>
+</view>
+

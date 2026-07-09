@@ -1,0 +1,25 @@
+{
+  "description": "leashLink smart dog walking assistant",
+  "miniprogramRoot": "miniprogram/",
+  "compileType": "miniprogram",
+  "setting": {
+    "useCompilerPlugins": [
+      "typescript"
+    ],
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    },
+    "minified": true,
+    "postcss": true,
+    "es6": true,
+    "enhance": true,
+    "packNpmRelationList": [],
+    "ignoreUploadUnusedFiles": true
+  },
+  "appid": "touristappid",
+  "projectname": "leashLink",
+  "condition": {}
+}
+

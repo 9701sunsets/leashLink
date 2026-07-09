@@ -1,0 +1,8 @@
+{
+  "component": true,
+  "usingComponents": {
+    "status-badge": "../StatusBadge/StatusBadge",
+    "battery-view": "../BatteryView/BatteryView"
+  }
+}
+

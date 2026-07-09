@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "设备管理",
+  "usingComponents": {
+    "device-card": "../../components/DeviceCard/DeviceCard"
+  }
+}
+

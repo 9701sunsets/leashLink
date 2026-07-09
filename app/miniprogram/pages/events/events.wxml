@@ -1,0 +1,16 @@
+<view class="page">
+  <view class="header">
+    <text class="title">安全事件</text>
+    <status-badge label="{{events.length}} 条记录" tone="device" />
+  </view>
+  <view class="filters">
+    <button class="{{filter === 'all' ? 'active' : ''}}" data-filter="all" bindtap="setFilter">全部</button>
+    <button class="{{filter === 'burst_pull' ? 'active' : ''}}" data-filter="burst_pull" bindtap="setFilter">爆冲</button>
+    <button class="{{filter === 'distance_warning' ? 'active' : ''}}" data-filter="distance_warning" bindtap="setFilter">距离</button>
+    <button class="{{filter === 'low_battery' ? 'active' : ''}}" data-filter="low_battery" bindtap="setFilter">电量</button>
+  </view>
+  <view class="list">
+    <alert-card wx:for="{{events}}" wx:key="event_id" event="{{item}}" />
+  </view>
+</view>
+

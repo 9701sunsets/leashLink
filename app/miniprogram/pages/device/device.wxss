@@ -1,0 +1,22 @@
+.device-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+}
+
+.ops {
+  display: grid;
+  gap: 18rpx;
+  padding: 28rpx;
+}
+
+.firmware {
+  display: flex;
+  justify-content: space-between;
+  gap: 18rpx;
+  margin-top: 24rpx;
+  padding: 28rpx;
+  color: #6b7280;
+  font-size: 26rpx;
+}
+

@@ -1,0 +1,38 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10rpx;
+  height: 48rpx;
+  padding: 0 18rpx;
+  border-radius: 24rpx;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.safe {
+  color: #22a95a;
+  background: #e9f9ef;
+}
+
+.warn {
+  color: #d88700;
+  background: #fff5df;
+}
+
+.danger {
+  color: #e5484d;
+  background: #fff0f1;
+}
+
+.device {
+  color: #1677ff;
+  background: #eef6ff;
+}
+

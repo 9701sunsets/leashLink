@@ -1,0 +1,7 @@
+{
+  "component": true,
+  "usingComponents": {
+    "status-badge": "../StatusBadge/StatusBadge"
+  }
+}
+

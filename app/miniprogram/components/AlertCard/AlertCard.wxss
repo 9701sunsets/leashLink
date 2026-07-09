@@ -1,0 +1,62 @@
+.alert-card {
+  padding: 28rpx;
+  border-radius: 16rpx;
+  background: #ffffff;
+  box-shadow: 0 12rpx 32rpx rgba(17, 24, 39, 0.08);
+}
+
+.alert-card + .alert-card {
+  margin-top: 18rpx;
+}
+
+.head,
+.metrics,
+.actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14rpx;
+}
+
+.head {
+  justify-content: space-between;
+}
+
+.time {
+  font-size: 24rpx;
+  color: #6b7280;
+}
+
+.summary {
+  display: block;
+  margin-top: 20rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.45;
+}
+
+.metrics {
+  margin-top: 18rpx;
+  color: #374151;
+  font-size: 24rpx;
+}
+
+.actions {
+  margin-top: 14rpx;
+  color: #22a95a;
+  font-size: 24rpx;
+}
+
+.danger {
+  border-left: 8rpx solid #ff4d4f;
+}
+
+.warn {
+  border-left: 8rpx solid #ffaa33;
+}
+
+.safe {
+  border-left: 8rpx solid #36c76c;
+}
+

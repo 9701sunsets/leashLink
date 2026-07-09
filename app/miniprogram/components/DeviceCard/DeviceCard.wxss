@@ -1,0 +1,39 @@
+.device-card {
+  padding: 28rpx;
+  border-radius: 16rpx;
+  background: #ffffff;
+  box-shadow: 0 12rpx 32rpx rgba(17, 24, 39, 0.08);
+}
+
+.top,
+.bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.bottom {
+  margin-top: 24rpx;
+}
+
+.name {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 800;
+  color: #111827;
+}
+
+.model,
+.meta {
+  display: block;
+  margin-top: 6rpx;
+  font-size: 24rpx;
+  color: #6b7280;
+}
+
+.meta {
+  text-align: right;
+  max-width: 260rpx;
+}
+

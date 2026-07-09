@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "leashLink",
+  "usingComponents": {
+    "status-badge": "../../components/StatusBadge/StatusBadge",
+    "battery-view": "../../components/BatteryView/BatteryView",
+    "metric-card": "../../components/MetricCard/MetricCard"
+  }
+}
+

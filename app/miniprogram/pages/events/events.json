@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "安全事件",
+  "usingComponents": {
+    "alert-card": "../../components/AlertCard/AlertCard",
+    "status-badge": "../../components/StatusBadge/StatusBadge"
+  }
+}
+

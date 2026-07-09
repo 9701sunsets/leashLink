@@ -1,0 +1,4 @@
+<view class="chart-wrap">
+  <canvas id="chart" type="2d" class="chart"></canvas>
+</view>
+

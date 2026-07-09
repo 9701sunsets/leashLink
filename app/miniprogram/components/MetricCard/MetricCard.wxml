@@ -1,0 +1,8 @@
+<view class="metric {{tone}}">
+  <text class="label">{{label}}</text>
+  <view class="row">
+    <text class="value">{{value}}</text>
+    <text class="unit">{{unit}}</text>
+  </view>
+</view>
+

@@ -1,0 +1,47 @@
+.metric {
+  min-height: 150rpx;
+  padding: 24rpx;
+  border-radius: 16rpx;
+  background: #ffffff;
+  box-shadow: 0 12rpx 32rpx rgba(17, 24, 39, 0.08);
+}
+
+.label {
+  font-size: 24rpx;
+  color: #6b7280;
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  gap: 8rpx;
+  margin-top: 12rpx;
+}
+
+.value {
+  font-size: 48rpx;
+  font-weight: 900;
+  color: #111827;
+}
+
+.unit {
+  font-size: 24rpx;
+  color: #6b7280;
+}
+
+.safe {
+  border-left: 8rpx solid #36c76c;
+}
+
+.warn {
+  border-left: 8rpx solid #ffaa33;
+}
+
+.danger {
+  border-left: 8rpx solid #ff4d4f;
+}
+
+.device {
+  border-left: 8rpx solid #1677ff;
+}
+

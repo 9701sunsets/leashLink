@@ -1,0 +1,42 @@
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  padding: 32rpx;
+}
+
+.avatar {
+  width: 104rpx;
+  height: 104rpx;
+  border-radius: 52rpx;
+  background: #36c76c;
+  color: #ffffff;
+  font-size: 36rpx;
+  font-weight: 900;
+  line-height: 104rpx;
+  text-align: center;
+}
+
+.name,
+.dog {
+  display: block;
+}
+
+.name {
+  font-size: 34rpx;
+  font-weight: 900;
+}
+
+.dog {
+  margin-top: 8rpx;
+  color: #6b7280;
+  font-size: 26rpx;
+}
+
+.item {
+  margin-bottom: 18rpx;
+  padding: 30rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+

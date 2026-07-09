@@ -1,0 +1,45 @@
+<view class="page">
+  <view class="hero card">
+    <view class="hero-top">
+      <view>
+        <text class="dog">Luna</text>
+        <view class="online-row">
+          <status-badge label="{{status.online ? '已连接' : '离线'}}" tone="{{status.online ? 'safe' : 'danger'}}" />
+          <text class="muted">C3 手柄 + C5 项圈</text>
+        </view>
+      </view>
+      <battery-view value="{{status.collar.battery_pct}}" label="项圈电量" />
+    </view>
+    <view class="safe-panel {{safetyTone}}">
+      <text class="safe-title">{{safetyLabel}}</text>
+      <text class="safe-sub">张力 {{status.handle.tension_n}}N · 距离 {{status.collar.distance_est_m}}m · {{motionText}}</text>
+    </view>
+  </view>
+
+  <view class="report-grid">
+    <metric-card label="今日遛狗" value="{{report.duration_min}}" unit="min" tone="device" />
+    <metric-card label="距离" value="{{report.distance_km}}" unit="km" tone="safe" />
+  </view>
+
+  <view class="section-title">实时状态</view>
+  <view class="metric-grid">
+    <metric-card label="张力" value="{{status.handle.tension_n}}" unit="N" tone="{{status.handle.tension_n >= 20 ? 'danger' : 'safe'}}" />
+    <metric-card label="运动" value="{{motionText}}" unit="" tone="device" />
+    <metric-card label="人狗距离" value="{{status.collar.distance_est_m}}" unit="m" tone="{{status.collar.distance_est_m >= 20 ? 'danger' : 'safe'}}" />
+    <metric-card label="步数" value="{{status.collar.steps}}" unit="步" tone="safe" />
+  </view>
+
+  <view class="actions">
+    <button class="primary-button" bindtap="toggleWalk">{{walking ? '结束遛狗' : '开始遛狗'}}</button>
+    <button class="secondary-button" bindtap="openEvents">查看事件</button>
+  </view>
+
+  <view class="quick card">
+    <view>
+      <text class="quick-title">安全参数</text>
+      <text class="quick-sub">爆冲阈值、距离阈值、夜间模式</text>
+    </view>
+    <button class="mini-button" bindtap="openConfig">设置</button>
+  </view>
+</view>
+

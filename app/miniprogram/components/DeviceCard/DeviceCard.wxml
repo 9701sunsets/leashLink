@@ -1,0 +1,14 @@
+<view class="device-card">
+  <view class="top">
+    <view>
+      <text class="name">{{name}}</text>
+      <text class="model">{{model}}</text>
+    </view>
+    <status-badge label="{{online ? '在线' : '离线'}}" tone="{{online ? 'safe' : 'danger'}}" />
+  </view>
+  <view class="bottom">
+    <battery-view value="{{battery}}" label="设备电量" />
+    <text class="meta">{{meta}}</text>
+  </view>
+</view>
+

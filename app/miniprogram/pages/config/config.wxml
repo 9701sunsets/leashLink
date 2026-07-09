@@ -1,0 +1,49 @@
+<view class="page" wx:if="{{config}}">
+  <view class="config-card card">
+    <text class="title">爆冲检测</text>
+    <view class="row">
+      <text>预警张力</text>
+      <text>{{config.burst_pull.tension_warn_n}} N</text>
+    </view>
+    <slider min="5" max="25" step="1" value="{{config.burst_pull.tension_warn_n}}" data-path="burst_pull.tension_warn_n" bindchange="onSlider" activeColor="#FFAA33" />
+    <view class="row">
+      <text>锁止张力</text>
+      <text>{{config.burst_pull.tension_lock_n}} N</text>
+    </view>
+    <slider min="10" max="35" step="1" value="{{config.burst_pull.tension_lock_n}}" data-path="burst_pull.tension_lock_n" bindchange="onSlider" activeColor="#FF4D4F" />
+    <view class="row">
+      <text>加速度阈值</text>
+      <text>{{config.burst_pull.accel_peak_g}} g</text>
+    </view>
+    <slider min="1" max="4" step="0.1" value="{{config.burst_pull.accel_peak_g}}" data-path="burst_pull.accel_peak_g" bindchange="onSlider" activeColor="#1677FF" />
+  </view>
+
+  <view class="config-card card">
+    <text class="title">安全距离</text>
+    <view class="row">
+      <text>提醒距离</text>
+      <text>{{config.distance.warn_m}} m</text>
+    </view>
+    <slider min="3" max="30" step="1" value="{{config.distance.warn_m}}" data-path="distance.warn_m" bindchange="onSlider" activeColor="#FFAA33" />
+    <view class="row">
+      <text>危险距离</text>
+      <text>{{config.distance.danger_m}} m</text>
+    </view>
+    <slider min="5" max="60" step="1" value="{{config.distance.danger_m}}" data-path="distance.danger_m" bindchange="onSlider" activeColor="#FF4D4F" />
+  </view>
+
+  <view class="config-card card">
+    <view class="row">
+      <text class="title">夜间模式</text>
+      <switch checked="{{config.night_mode.enabled}}" bindchange="onSwitch" color="#36C76C" />
+    </view>
+    <view class="row">
+      <text>光照阈值</text>
+      <text>{{config.night_mode.light_threshold_lux}} lux</text>
+    </view>
+    <slider min="5" max="120" step="5" value="{{config.night_mode.light_threshold_lux}}" data-path="night_mode.light_threshold_lux" bindchange="onSlider" activeColor="#36C76C" />
+  </view>
+
+  <button class="primary-button save" bindtap="save">保存配置</button>
+</view>
+
