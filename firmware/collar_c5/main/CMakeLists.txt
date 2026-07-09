@@ -1,0 +1,22 @@
+idf_component_register(
+    SRCS
+        "app_main.c"
+        "drivers/imu_driver.c"
+        "drivers/led_driver.c"
+        "drivers/buzzer_driver.c"
+        "drivers/vibration_driver.c"
+        "services/motion_service.c"
+        "services/feedback_service.c"
+        "services/power_service.c"
+        "communication/espnow_handle.c"
+        "communication/ble_adv.c"
+        "tasks/task_imu.c"
+        "tasks/task_feedback.c"
+    INCLUDE_DIRS
+        "."
+        "board"
+        "drivers"
+        "services"
+        "communication"
+        "tasks"
+)

@@ -1,0 +1,41 @@
+#include "power_service.h"
+
+#include "esp_adc/adc_oneshot.h"
+#include "esp_log.h"
+
+#include "board_pins.h"
+
+static const char *TAG = "power";
+static adc_oneshot_unit_handle_t s_adc;
+
+esp_err_t power_service_init(void)
+{
+    adc_oneshot_unit_init_cfg_t init_cfg = {
+        .unit_id = ADC_UNIT_1,
+    };
+    esp_err_t err = adc_oneshot_new_unit(&init_cfg, &s_adc);
+    if (err != ESP_OK) {
+        ESP_LOGW(TAG, "adc init failed: %s", esp_err_to_name(err));
+        return err;
+    }
+
+    adc_oneshot_chan_cfg_t chan_cfg = {
+        .atten = ADC_ATTEN_DB_12,
+        .bitwidth = ADC_BITWIDTH_DEFAULT,
+    };
+    ESP_ERROR_CHECK(adc_oneshot_config_channel(s_adc, COLLAR_BAT_ADC_CHANNEL, &chan_cfg));
+    ESP_LOGI(TAG, "power service initialized");
+    return ESP_OK;
+}
+
+uint8_t power_service_get_battery_pct(void)
+{
+    int raw = 0;
+    if (!s_adc || adc_oneshot_read(s_adc, COLLAR_BAT_ADC_CHANNEL, &raw) != ESP_OK) {
+        return 100;
+    }
+    int pct = (raw - 1800) * 100 / (3000 - 1800);
+    if (pct < 0) pct = 0;
+    if (pct > 100) pct = 100;
+    return (uint8_t)pct;
+}
