@@ -1,4 +1,5 @@
 {
+  "description": "leashLink - 宠物智能项圈微信小程序",
   "setting": {
     "es6": true,
     "postcss": true,
@@ -11,8 +12,13 @@
       "disablePlugins": [],
       "outputPath": ""
     },
-    "useCompilerPlugins": false,
-    "minifyWXML": true
+    "useCompilerPlugins": [
+      "typescript"
+    ],
+    "minifyWXML": true,
+    "minifyWXSS": true,
+    "minifyJS": true,
+    "lazyCodeLoading": "requiredComponents"
   },
   "compileType": "miniprogram",
   "simulatorPluginLibVersion": {},
@@ -20,6 +26,10 @@
     "ignore": [],
     "include": []
   },
+  "condition": {},
   "appid": "wxce3745e4c2012991",
-  "editorSetting": {}
+  "editorSetting": {
+    "tabIndent": "insertSpaces",
+    "tabSize": 2
+  }
 }

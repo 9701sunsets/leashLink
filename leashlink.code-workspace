@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "firmware/collar_c5"
+		},
+		{
+			"path": "app"
 		}
 	],
 	"settings": {}
