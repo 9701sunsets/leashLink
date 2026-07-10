@@ -9,6 +9,9 @@
 #include "power.h"
 #include "tension_service.h"
 
+/**
+ * 云端任务
+ */
 void task_cloud(void *arg)
 {
     (void)arg;

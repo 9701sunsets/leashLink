@@ -9,6 +9,9 @@
 
 static const char *TAG = "buzzer";
 
+/**
+ * 初始化蜂鸣器驱动
+ */
 esp_err_t buzzer_init(void)
 {
     gpio_config_t cfg = {
@@ -21,6 +24,10 @@ esp_err_t buzzer_init(void)
     return ESP_OK;
 }
 
+/**
+ * 蜂鸣器发声
+ * @param duration_ms 持续时间（毫秒）
+ */
 esp_err_t buzzer_beep(uint16_t duration_ms)
 {
     gpio_set_level(COLLAR_BUZZER_GPIO, 1);
@@ -31,6 +38,9 @@ esp_err_t buzzer_beep(uint16_t duration_ms)
     return ESP_OK;
 }
 
+/**
+ * 停止蜂鸣器
+ */
 esp_err_t buzzer_stop(void)
 {
     gpio_set_level(COLLAR_BUZZER_GPIO, 0);

@@ -4,12 +4,22 @@
 
 static const char *TAG = "oled";
 
+/**
+ * 初始化OLED显示屏
+ */
 esp_err_t oled_init(void)
 {
     ESP_LOGI(TAG, "OLED stub initialized. Integrate SSD1306/U8g2 here.");
     return ESP_OK;
 }
 
+/**
+ * 显示状态信息
+ * @param tension 张力样本
+ * @param collar 项圈遥测数据
+ * @param safety_state 安全状态
+ * @param battery_pct 电池百分比
+ */
 esp_err_t oled_show_status(const ll_tension_sample_t *tension,
                            const ll_collar_telemetry_t *collar,
                            ll_safety_state_t safety_state,
@@ -24,6 +34,11 @@ esp_err_t oled_show_status(const ll_tension_sample_t *tension,
     return ESP_OK;
 }
 
+/**
+ * 显示消息
+ * @param line1 第一行文本
+ * @param line2 第二行文本
+ */
 esp_err_t oled_show_message(const char *line1, const char *line2)
 {
     ESP_LOGI(TAG, "%s | %s", line1 ? line1 : "", line2 ? line2 : "");

@@ -11,6 +11,9 @@ static const char *TAG = "tension_service";
 static ll_tension_sample_t s_latest;
 static float s_filtered_n;
 
+/**
+ * 初始化张力服务
+ */
 esp_err_t tension_service_init(void)
 {
     ESP_ERROR_CHECK(hx711_init());
@@ -18,6 +21,9 @@ esp_err_t tension_service_init(void)
     return ESP_OK;
 }
 
+/**
+ * 采样张力
+ */
 esp_err_t tension_service_sample(ll_tension_sample_t *out)
 {
     float n = 0.0f;
@@ -41,6 +47,9 @@ esp_err_t tension_service_sample(ll_tension_sample_t *out)
     return ESP_OK;
 }
 
+/**
+ * 获取最新张力样本
+ */
 ll_tension_sample_t tension_service_get_latest(void)
 {
     return s_latest;

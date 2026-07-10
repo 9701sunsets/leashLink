@@ -9,6 +9,9 @@
 
 static const char *TAG = "task_imu";
 
+/**
+ * IMU采样任务
+ */
 void task_imu(void *arg)
 {
     (void)arg;

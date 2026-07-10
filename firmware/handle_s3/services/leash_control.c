@@ -7,6 +7,9 @@
 static const char *TAG = "leash_control";
 static ll_leash_state_t s_state = LL_LEASH_UNLOCKED;
 
+/**
+ * 初始化牵引控制
+ */
 esp_err_t leash_control_init(void)
 {
     ESP_ERROR_CHECK(servo_init());
@@ -14,6 +17,10 @@ esp_err_t leash_control_init(void)
     return servo_unlock();
 }
 
+/**
+ * 锁定牵引
+ * @param hold_ms 锁定保持时间（毫秒）
+ */
 esp_err_t leash_control_lock(uint32_t hold_ms)
 {
     (void)hold_ms;
@@ -22,6 +29,9 @@ esp_err_t leash_control_lock(uint32_t hold_ms)
     return servo_lock();
 }
 
+/**
+ * 解锁牵引
+ */
 esp_err_t leash_control_unlock(void)
 {
     ESP_LOGI(TAG, "unlock leash");
@@ -29,6 +39,9 @@ esp_err_t leash_control_unlock(void)
     return servo_unlock();
 }
 
+/**
+ * 获取当前牵引状态
+ */
 ll_leash_state_t leash_control_get_state(void)
 {
     return s_state;

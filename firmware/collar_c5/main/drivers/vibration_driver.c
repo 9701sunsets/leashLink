@@ -9,6 +9,9 @@
 
 static const char *TAG = "vibration";
 
+/**
+ * 初始化振动电机驱动
+ */
 esp_err_t vibration_init(void)
 {
     gpio_config_t cfg = {
@@ -21,6 +24,10 @@ esp_err_t vibration_init(void)
     return ESP_OK;
 }
 
+/**
+ * 运行振动电机
+ * @param duration_ms 持续时间（毫秒）
+ */
 esp_err_t vibration_run(uint16_t duration_ms)
 {
     gpio_set_level(COLLAR_MOTOR_GPIO, 1);
@@ -31,6 +38,9 @@ esp_err_t vibration_run(uint16_t duration_ms)
     return ESP_OK;
 }
 
+/**
+ * 停止振动
+ */
 esp_err_t vibration_stop(void)
 {
     gpio_set_level(COLLAR_MOTOR_GPIO, 0);

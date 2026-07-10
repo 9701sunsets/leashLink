@@ -8,6 +8,9 @@
 static const char *TAG = "power";
 static adc_oneshot_unit_handle_t s_adc;
 
+/**
+ * 初始化电源管理
+ */
 esp_err_t power_init(void)
 {
     adc_oneshot_unit_init_cfg_t init_cfg = {
@@ -28,6 +31,9 @@ esp_err_t power_init(void)
     return ESP_OK;
 }
 
+/**
+ * 获取电池电量百分比估计值（0-100）
+ */
 int power_get_battery_pct(void)
 {
     int raw = 0;
@@ -41,6 +47,9 @@ int power_get_battery_pct(void)
     return pct;
 }
 
+/**
+ * 获取光照强度估计值（单位：lux）
+ */
 int power_get_light_lux_est(void)
 {
     int raw = 0;

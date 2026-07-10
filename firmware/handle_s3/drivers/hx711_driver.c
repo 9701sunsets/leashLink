@@ -7,11 +7,17 @@
 #include "board_pins.h"
 
 static const char *TAG = "hx711";
+/**
+ * HX711校准参数
+ */
 static hx711_calibration_t s_cal = {
     .zero_offset = 0,
     .scale_counts_per_n = 12000.0f,
 };
 
+/**
+ * 初始化HX711
+ */
 esp_err_t hx711_init(void)
 {
     gpio_config_t dout_cfg = {
@@ -30,6 +36,10 @@ esp_err_t hx711_init(void)
     return ESP_OK;
 }
 
+/**
+ * 读取原始ADC值
+ * @param raw 输出原始ADC值
+ */
 esp_err_t hx711_read_raw(int32_t *raw)
 {
     if (!raw) {
@@ -65,6 +75,10 @@ esp_err_t hx711_read_raw(int32_t *raw)
     return ESP_OK;
 }
 
+/**
+ * 设置校准参数
+ * @param cal 校准参数
+ */
 esp_err_t hx711_set_calibration(hx711_calibration_t cal)
 {
     if (cal.scale_counts_per_n <= 1.0f) {
@@ -74,6 +88,10 @@ esp_err_t hx711_set_calibration(hx711_calibration_t cal)
     return ESP_OK;
 }
 
+/**
+ * 读取张力值（牛顿）
+ * @param newtons 输出张力值
+ */
 esp_err_t hx711_read_newtons(float *newtons)
 {
     int32_t raw = 0;
@@ -88,6 +106,10 @@ esp_err_t hx711_read_newtons(float *newtons)
     return ESP_OK;
 }
 
+/**
+ * 执行去皮操作，计算零点偏移
+ * @param samples 采样次数
+ */
 esp_err_t hx711_tare(uint16_t samples)
 {
     if (samples == 0) {

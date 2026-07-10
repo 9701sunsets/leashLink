@@ -9,11 +9,17 @@ static bool s_active;
 static uint32_t s_burst_count;
 static uint32_t s_distance_count;
 
+/**
+ * 初始化会话服务
+ */
 esp_err_t session_service_init(void)
 {
     return session_service_start();
 }
 
+/**
+ * 启动新会话
+ */
 esp_err_t session_service_start(void)
 {
     snprintf(s_session_id, sizeof(s_session_id), "S-%lld", esp_timer_get_time() / 1000);
@@ -23,17 +29,26 @@ esp_err_t session_service_start(void)
     return ESP_OK;
 }
 
+/**
+ * 停止当前会话
+ */
 esp_err_t session_service_stop(void)
 {
     s_active = false;
     return ESP_OK;
 }
 
+/**
+ * 获取当前会话ID
+ */
 const char *session_service_get_id(void)
 {
     return s_active ? s_session_id : "idle";
 }
 
+/**
+ * 获取当前会话的事件计数
+ */
 void session_service_count_event(int event_type)
 {
     if (event_type == 1) {

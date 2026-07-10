@@ -12,6 +12,9 @@
 
 static const char *TAG = "espnow";
 
+/**
+ * 接收回调函数
+ */
 static void on_recv(const uint8_t *mac_addr, const uint8_t *data, int len)
 {
     (void)mac_addr;
@@ -25,6 +28,9 @@ static void on_recv(const uint8_t *mac_addr, const uint8_t *data, int len)
     feedback_service_handle_cmd(&cmd);
 }
 
+/**
+ * 初始化ESP-NOW通信
+ */
 esp_err_t espnow_handle_init(void)
 {
     ESP_ERROR_CHECK(nvs_flash_init());
@@ -42,6 +48,11 @@ esp_err_t espnow_handle_init(void)
     return ESP_OK;
 }
 
+/**
+ * 发送项圈遥测数据
+ * @param telemetry 遥测数据
+ * @return ESP_OK on success, or an error code on failure
+ */
 esp_err_t espnow_handle_send_telemetry(const ll_collar_telemetry_t *telemetry)
 {
     if (!telemetry) {
@@ -56,6 +67,11 @@ esp_err_t espnow_handle_send_telemetry(const ll_collar_telemetry_t *telemetry)
     return err;
 }
 
+/**
+ * 处理接收到的控制命令
+ * @param cmd 控制命令
+ * @return ESP_OK on success, or an error code on failure
+ */
 esp_err_t espnow_handle_receive_control_cmd(const ll_control_cmd_t *cmd)
 {
     if (!cmd) {

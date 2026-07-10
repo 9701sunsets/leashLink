@@ -7,6 +7,9 @@
 
 static const char *TAG = "safety";
 
+/**
+ * 默认安全配置
+ */
 static ll_safety_config_t s_cfg = {
     .warn_tension_n = 12.0f,
     .lock_tension_n = 20.0f,
@@ -22,6 +25,9 @@ static ll_safety_state_t s_state = LL_SAFETY_SAFE;
 static int64_t s_state_since_ms;
 static int64_t s_last_event_ms;
 
+/**
+ * 状态转换
+ */
 static void transition(ll_safety_state_t next, int64_t now_ms)
 {
     if (s_state == next) {
@@ -32,6 +38,11 @@ static void transition(ll_safety_state_t next, int64_t now_ms)
     s_state_since_ms = now_ms;
 }
 
+/**
+ * 初始化安全服务
+ * @param config 配置参数（可选）
+ * @return ESP_OK on success, or an error code on failure
+ */
 esp_err_t safety_service_init(const ll_safety_config_t *config)
 {
     if (config) {
@@ -42,11 +53,20 @@ esp_err_t safety_service_init(const ll_safety_config_t *config)
     return ESP_OK;
 }
 
+/**
+ * 获取当前安全状态
+ */
 ll_safety_state_t safety_service_get_state(void)
 {
     return s_state;
 }
 
+/**
+ * 评估安全状态
+ * @param input 输入数据
+ * @param event_out 输出事件（可选）
+ * @return ESP_OK on success, or an error code on failure
+ */
 esp_err_t safety_service_eval(const ll_safety_input_t *input, ll_safety_event_t *event_out)
 {
     if (!input) {

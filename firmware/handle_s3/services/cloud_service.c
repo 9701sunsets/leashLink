@@ -9,11 +9,22 @@
 
 static const char *TAG = "cloud_service";
 
+/**
+ * 初始化云服务
+ */
 esp_err_t cloud_service_init(void)
 {
     return mqtt_client_ll_init();
 }
 
+/**
+ * 发布遥控器和项圈的遥测数据到云端
+ * @param tension 张力样本
+ * @param collar 项圈遥测数据
+ * @param leash_state 牵引状态
+ * @param battery_pct 电池百分比
+ * @return ESP_OK on success, or an error code on failure
+ */
 esp_err_t cloud_service_publish_telemetry(const ll_tension_sample_t *tension,
                                           const ll_collar_telemetry_t *collar,
                                           ll_leash_state_t leash_state,
@@ -38,6 +49,11 @@ esp_err_t cloud_service_publish_telemetry(const ll_tension_sample_t *tension,
     return mqtt_client_ll_publish("leashlink/" LL_PAIR_ID "/telemetry", payload, 0);
 }
 
+/**
+ * 发布安全事件到云端
+ * @param event 安全事件
+ * @return ESP_OK on success, or an error code on failure
+ */
 esp_err_t cloud_service_publish_event(const ll_safety_event_t *event)
 {
     if (!event || event->type == LL_EVENT_NONE) {

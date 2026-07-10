@@ -9,12 +9,20 @@
 
 static const char *TAG = "feedback";
 
+/**
+ * 初始化反馈服务
+ */
 esp_err_t feedback_service_init(void)
 {
     ESP_LOGI(TAG, "feedback service initialized");
     return ESP_OK;
 }
 
+/**
+ * 处理反馈命令
+ * @param cmd 控制命令
+ * @return ESP_OK on success, or an error code on failure
+ */
 esp_err_t feedback_service_handle_cmd(const ll_control_cmd_t *cmd)
 {
     if (!cmd) {

@@ -9,6 +9,9 @@
 #include "safety_service.h"
 #include "tension_service.h"
 
+/**
+ * UI任务
+ */
 void task_ui(void *arg)
 {
     (void)arg;

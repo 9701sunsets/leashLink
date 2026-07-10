@@ -12,6 +12,12 @@
 static const char *TAG = "gps";
 static ll_gps_fix_t s_latest;
 
+/**
+ * 将NMEA格式的纬度/经度转换为十进制度数
+ * @param val NMEA格式的纬度/经度字符串
+ * @param hemi 半球标识（'N', 'S', 'E', 'W'）
+ * @return 十进制度数
+ */
 static double nmea_to_degrees(const char *val, const char hemi)
 {
     if (!val || strlen(val) < 4) {
@@ -27,6 +33,10 @@ static double nmea_to_degrees(const char *val, const char hemi)
     return out;
 }
 
+/**
+ * 解析GGA语句
+ * @param line GGA语句行
+ */
 static void parse_gga(char *line)
 {
     char *fields[16] = {0};
@@ -52,6 +62,9 @@ static void parse_gga(char *line)
     s_latest.ts_ms = esp_timer_get_time() / 1000;
 }
 
+/**
+ * 初始化GPS驱动
+ */
 esp_err_t gps_init(void)
 {
     uart_config_t cfg = {
@@ -70,6 +83,10 @@ esp_err_t gps_init(void)
     return ESP_OK;
 }
 
+/**
+ * 轮询GPS数据
+ * @param out 输出最新GPS定位数据（可选）
+ */
 esp_err_t gps_poll(ll_gps_fix_t *out)
 {
     static char line[128];
@@ -95,6 +112,9 @@ esp_err_t gps_poll(ll_gps_fix_t *out)
     return ESP_OK;
 }
 
+/**
+ * 获取最新GPS定位数据
+ */
 ll_gps_fix_t gps_get_latest(void)
 {
     return s_latest;

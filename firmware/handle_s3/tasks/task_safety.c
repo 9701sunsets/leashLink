@@ -15,6 +15,9 @@
 
 static const char *TAG = "task_safety";
 
+/**
+ * 安全评估任务
+ */
 void task_safety(void *arg)
 {
     (void)arg;

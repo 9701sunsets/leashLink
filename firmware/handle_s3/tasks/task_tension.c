@@ -8,6 +8,9 @@
 
 static const char *TAG = "task_tension";
 
+/**
+ * 张力采样任务
+ */
 void task_tension(void *arg)
 {
     (void)arg;

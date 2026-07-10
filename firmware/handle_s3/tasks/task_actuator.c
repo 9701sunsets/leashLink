@@ -7,6 +7,9 @@
 #include "motor_driver.h"
 #include "safety_service.h"
 
+/**
+ * 执行器任务
+ */
 void task_actuator(void *arg)
 {
     (void)arg;

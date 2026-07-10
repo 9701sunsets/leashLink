@@ -8,6 +8,9 @@
 static const char *TAG = "power";
 static adc_oneshot_unit_handle_t s_adc;
 
+/**
+ * 初始化电源服务
+ */
 esp_err_t power_service_init(void)
 {
     adc_oneshot_unit_init_cfg_t init_cfg = {
@@ -28,6 +31,9 @@ esp_err_t power_service_init(void)
     return ESP_OK;
 }
 
+/**
+ * 获取电池电量百分比估计值（0-100）
+ */
 uint8_t power_service_get_battery_pct(void)
 {
     int raw = 0;

@@ -3,6 +3,9 @@
 #include <stdint.h>
 #include "esp_err.h"
 
+/**
+ * HX711校准参数
+ */
 typedef struct {
     int32_t zero_offset;
     float scale_counts_per_n;

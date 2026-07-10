@@ -7,6 +7,9 @@
 
 static const char *TAG = "led";
 
+/**
+ * 初始化LED驱动
+ */
 esp_err_t led_init(void)
 {
     gpio_config_t cfg = {
@@ -18,6 +21,10 @@ esp_err_t led_init(void)
     return ESP_OK;
 }
 
+/**
+ * 设置LED模式
+ * @param pattern 模式编号
+ */
 esp_err_t led_set_pattern(uint8_t pattern)
 {
     (void)pattern;
@@ -25,6 +32,9 @@ esp_err_t led_set_pattern(uint8_t pattern)
     return ESP_OK;
 }
 
+/**
+ * 停止LED
+ */
 esp_err_t led_stop(void)
 {
     ESP_LOGI(TAG, "led stop");

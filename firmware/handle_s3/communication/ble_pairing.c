@@ -4,12 +4,18 @@
 
 static const char *TAG = "ble_pairing";
 
+/**
+ * 初始化BLE配对
+ */
 esp_err_t ble_pairing_init(void)
 {
     ESP_LOGI(TAG, "BLE pairing stub initialized. Use NimBLE scan for collar advertisements.");
     return ESP_OK;
 }
 
+/**
+ * 开始BLE扫描
+ */
 esp_err_t ble_pairing_start_scan(void)
 {
     ESP_LOGI(TAG, "start scan stub");
