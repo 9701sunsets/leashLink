@@ -1,9 +1,6 @@
 {
 	"folders": [
 		{
-			"path": "firmware/handle_c3"
-		},
-		{
 			"path": "backend"
 		},
 		{
@@ -11,6 +8,9 @@
 		},
 		{
 			"path": "app"
+		},
+		{
+			"path": "firmware/handle_s3"
 		}
 	],
 	"settings": {}
