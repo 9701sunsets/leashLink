@@ -7,13 +7,13 @@ from app.services.event_service import create_event, list_events
 
 router = APIRouter(prefix="/events", tags=["events"])
 
-
+# 事件上报接口
 @router.post("", response_model=EventCreateRequest)
 def create_event_endpoint(payload: EventCreateRequest) -> EventCreateRequest:
     event = create_event(payload)
     return EventCreateRequest.model_validate(event.model_dump())
 
-
+# 事件列表查询接口
 @router.get("", response_model=EventListResponse)
 def list_events_endpoint(
     pair_id: str,

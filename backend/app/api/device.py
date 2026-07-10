@@ -6,14 +6,15 @@ from app.models import DeviceRegisterRequest, DeviceRegisterResponse, DeviceStat
 from app.services.config_service import set_fence
 from app.services.device_service import get_status, register_device
 
+# 设备路由模块
 router = APIRouter(prefix="/devices", tags=["devices"])
 
-
+# 设备注册接口
 @router.post("/register", response_model=DeviceRegisterResponse)
 def register_device_endpoint(payload: DeviceRegisterRequest) -> DeviceRegisterResponse:
     return register_device(payload)
 
-
+# 设备状态查询接口
 @router.get("/{pair_id}/status", response_model=DeviceStatusResponse)
 def device_status_endpoint(pair_id: str) -> DeviceStatusResponse:
     try:
@@ -21,7 +22,7 @@ def device_status_endpoint(pair_id: str) -> DeviceStatusResponse:
     except KeyError as exc:
         raise HTTPException(status_code=404, detail="device not found") from exc
 
-
+# 设备围栏配置设置接口
 @router.put("/{pair_id}/fence")
 def fence_endpoint(pair_id: str, payload: FenceConfigRequest):
     return set_fence(pair_id, payload)

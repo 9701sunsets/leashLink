@@ -20,6 +20,7 @@ class PostgresStore:
             raise PostgresUnavailable("psycopg is not installed") from exc
         self._psycopg = psycopg
 
+    # 上下文管理器，用于获取数据库连接
     @contextmanager
     def connection(self) -> Iterator[object]:
         with self._psycopg.connect(self.dsn) as conn:

@@ -37,10 +37,12 @@ class InMemoryRepository:
         self._events_by_pair: dict[str, list[StoredEvent]] = defaultdict(list)
         self._sessions_by_pair: dict[str, set[str]] = defaultdict(set)
 
+    # 生成下一个设备配对ID
     def _next_pair_id(self) -> str:
         self._sequence += 1
         return f"LL-P-{self._sequence:04d}"
 
+    # 设备注册服务模块
     def register_device(self, handle_id: str, collar_id: str, hardware) -> DeviceRecord:
         with self._lock:
             for device in self._devices.values():
@@ -67,12 +69,15 @@ class InMemoryRepository:
             )
             return record
 
+    # 设备查询服务模块
     def get_device(self, pair_id: str) -> Optional[DeviceRecord]:
         return self._devices.get(pair_id)
 
+    # 设备列表查询服务模块
     def list_devices(self) -> list[DeviceRecord]:
         return list(self._devices.values())
 
+    # 设备遥测数据上报服务模块
     def upsert_telemetry(self, telemetry: StoredTelemetry) -> StoredTelemetry:
         with self._lock:
             runtime = self._runtime.setdefault(
@@ -112,12 +117,14 @@ class InMemoryRepository:
                 runtime.status.collar.distance_est_m = telemetry.collar.distance_est_m
             return telemetry
 
+    # 设备状态查询服务模块
     def get_status(self, pair_id: str) -> Optional[DeviceStatusResponse]:
         runtime = self._runtime.get(pair_id)
         if runtime is None:
             return None
         return runtime.status
 
+    # 设备事件上报服务模块
     def add_event(self, event: StoredEvent) -> StoredEvent:
         with self._lock:
             self._events_by_pair[event.pair_id].append(event)
@@ -139,6 +146,7 @@ class InMemoryRepository:
             runtime.status.last_seen_ms = event.ts_ms
             return event
 
+    # 事件列表查询服务模块
     def list_events(
         self,
         pair_id: str,
@@ -162,6 +170,7 @@ class InMemoryRepository:
         ]
         return EventListResponse(items=items, next_cursor=None)
 
+    # 事件摘要生成服务模块
     def _summarize_event(self, event: StoredEvent) -> str:
         if event.type == "burst_pull":
             tension = event.metrics.tension_peak_n if event.metrics.tension_peak_n is not None else 0
@@ -174,6 +183,7 @@ class InMemoryRepository:
             return f"距离告警，估计距离 {distance:.1f}m"
         return f"{event.type} / {event.severity}"
 
+    # 设备围栏配置上报服务模块
     def upsert_fence(self, pair_id: str, fence: FenceConfigRequest) -> int:
         with self._lock:
             runtime = self._runtime.setdefault(
@@ -193,6 +203,7 @@ class InMemoryRepository:
             runtime.config_version += 1
             return runtime.config_version
 
+    # 设备配置上报服务模块
     def upsert_config(self, pair_id: str, config: DeviceConfigRequest) -> int:
         with self._lock:
             runtime = self._runtime.setdefault(
