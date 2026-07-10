@@ -10,7 +10,7 @@ from app.models import (
 )
 from app.services.session_service import build_session_id
 
-
+# 设备注册服务模块
 def register_device(payload: DeviceRegisterRequest) -> DeviceRegisterResponse:
     record = repository.register_device(payload.handle_id, payload.collar_id, payload.hardware)
     return DeviceRegisterResponse(
@@ -19,19 +19,19 @@ def register_device(payload: DeviceRegisterRequest) -> DeviceRegisterResponse:
         created_at=record.created_at,
     )
 
-
+# 设备状态查询服务模块
 def get_status(pair_id: str) -> DeviceStatusResponse:
     status = repository.get_status(pair_id)
     if status is None:
         raise KeyError(pair_id)
     return status
 
-
+# 设备遥测数据上报服务模块
 def upsert_telemetry(payload: TelemetryUpsertRequest) -> StoredTelemetry:
     telemetry = StoredTelemetry.model_validate(payload.model_dump())
     repository.upsert_telemetry(telemetry)
     return telemetry
 
-
+# 设备会话ID确保服务模块
 def ensure_session_id(session_id: str | None = None) -> str:
     return session_id or build_session_id()

@@ -18,29 +18,36 @@ class MQTTPublisher:
             else:
                 self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 
+    # 连接到MQTT代理
     def connect(self) -> None:
         if self.client is None or not self.host:
             return
         self.client.connect(self.host, self.port, keepalive=60)
         self.client.loop_start()
 
+    # 发布消息到指定主题
     def publish(self, topic: str, payload: dict[str, Any], qos: int = 0) -> None:
         if self.client is None:
             return
         self.client.publish(topic, json.dumps(payload, ensure_ascii=False), qos=qos)
 
+    # 设备遥测数据发布服务模块
     def publish_telemetry(self, pair_id: str, payload: dict[str, Any]) -> None:
         self.publish(f"leashlink/{pair_id}/telemetry", payload, qos=0)
 
+    # 事件发布服务模块
     def publish_event(self, pair_id: str, payload: dict[str, Any]) -> None:
         self.publish(f"leashlink/{pair_id}/event", payload, qos=1)
 
+    # 设备状态发布服务模块
     def publish_status(self, pair_id: str, payload: dict[str, Any]) -> None:
         self.publish(f"leashlink/{pair_id}/status", payload, qos=1)
 
+    # 设备命令应答发布服务模块
     def publish_cmd_ack(self, pair_id: str, payload: dict[str, Any]) -> None:
         self.publish(f"leashlink/{pair_id}/cmd_ack", payload, qos=1)
 
+    # 断开与MQTT代理的连接
     def disconnect(self) -> None:
         if self.client is None:
             return
