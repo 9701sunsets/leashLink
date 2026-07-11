@@ -25,6 +25,7 @@ void task_feedback(void *arg)
             };
             feedback_service_handle_cmd(&cmd);
         }
+        ESP_LOGD(TAG, "feedback task running");
         vTaskDelay(pdMS_TO_TICKS(300));
     }
 }

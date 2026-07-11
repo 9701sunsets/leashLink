@@ -1,0 +1,25 @@
+# Build outputs
+build/
+managed_components/
+.pio/
+.cache/
+
+# ESP-IDF generated files
+sdkconfig
+sdkconfig.old
+sdkconfig.defaults.old
+sdkconfig.cmake
+sdkconfig.h
+sdkconfig.json
+compile_commands.json
+
+# Tool and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs and temporary files
+*.log

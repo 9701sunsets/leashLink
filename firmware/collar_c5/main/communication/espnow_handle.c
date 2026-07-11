@@ -15,8 +15,9 @@ static const char *TAG = "espnow";
 /**
  * 接收回调函数
  */
-static void on_recv(const uint8_t *mac_addr, const uint8_t *data, int len)
+static void on_recv(const esp_now_recv_info_t *esp_now_info, const uint8_t *data, int len)
 {
+    const uint8_t *mac_addr = esp_now_info->src_addr;
     (void)mac_addr;
     if (len < (int)sizeof(ll_control_cmd_t)) {
         return;

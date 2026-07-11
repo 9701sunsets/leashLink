@@ -1,9 +1,11 @@
 {
-    "cmake.sourceDirectory": "D:/ESP/leashLink/firmware/handle_c3",
+    "cmake.sourceDirectory": "D:/ESP/leashLink/firmware/collar_c5",
     "idf.espIdfPathWin": "d:\\ESP\\esp-idf\\v6.0.1\\esp-idf",
     "idf.toolsPathWin": "D:\\Espressif\\tools",
     "idf.pythonInstallPath": "D:\\Espressif\\tools\\tools\\idf-python\\3.11.2\\python.exe",
     "idf.openOcdConfigs": [
         "board/esp32s3-builtin.cfg"
-    ]
+    ],
+    "terminal.integrated.cwd": "${workspaceFolder}/firmware/collar_c5",
+    "idf.projectPath": "${workspaceFolder}/firmware/collar_c5"
 }
