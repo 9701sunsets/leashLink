@@ -20,6 +20,9 @@ idf.py build
 
 # 烧录（按住 BOOT→按 RST→松开 BOOT）
 idf.py -p COM7 flash
+
+# 监视
+idf.py -p COM7 monitor
 ```
 
 ### 手柄端
@@ -36,5 +39,8 @@ idf.py fullclean
 
 # 编译、烧录
 idf.py build
-idf.py -p COMx flash
+idf.py -p COM5 flash
+
+# 监视
+idf.py -p COM5 monitor
 ```
