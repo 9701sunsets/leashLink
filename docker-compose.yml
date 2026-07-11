@@ -1,0 +1,28 @@
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: leashlink-mosquitto
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./infra/mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./infra/mosquitto/data:/mosquitto/data
+      - ./infra/mosquitto/log:/mosquitto/log
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16
+    container_name: leashlink-postgres
+    environment:
+      POSTGRES_DB: leashlink
+      POSTGRES_USER: leashlink
+      POSTGRES_PASSWORD: leashlink123
+    ports:
+      - "5432:5432"
+    volumes:
+      - leashlink_pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  leashlink_pgdata:

@@ -43,7 +43,12 @@ esp_err_t espnow_handle_init(void)
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_start());
     ESP_ERROR_CHECK(esp_now_init());
+    // 广播peer
+    esp_now_peer_info_t peer = {0};
+    memcpy(peer.peer_addr, (uint8_t[]){0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}, 6);
+    peer.channel = 0; // 使用当前信道
     ESP_ERROR_CHECK(esp_now_register_recv_cb(on_recv));
+    ESP_ERROR_CHECK(esp_now_add_peer(&peer));
 
     ESP_LOGI(TAG, "initialized");
     return ESP_OK;

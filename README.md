@@ -7,7 +7,7 @@
 ### 项圈端
 
 操作ESP32C5
-```
+```bash
 # 进入 C5 项目
 cd firmware/collar_c5
 
@@ -28,7 +28,7 @@ idf.py -p COM7 monitor
 ### 手柄端
 
 操作ESP32S3
-```
+```bash
 # 退回根目录或直接进 S3
 cd ../../handle_s3
 # 或 cd firmware/handle_s3
@@ -44,3 +44,15 @@ idf.py -p COM5 flash
 # 监视
 idf.py -p COM5 monitor
 ```
+
+### 后端
+
+- Python虚拟环境下进入`backend/`
+- 启动mosquitto+SQL的Docker容器
+```bash
+uvicorn app.main:app --reload
+```
+
+### 前端
+
+微信小程序APP
