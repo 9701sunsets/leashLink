@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PetPulse</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <svg class="svg-defs" aria-hidden="true">
+      <symbol id="icon-home" viewBox="0 0 24 24"><path d="M4 11.2 12 4l8 7.2v8.3a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1z" /></symbol>
+      <symbol id="icon-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-9.2-9.2C1.6 7.5 3.7 4.5 7 4.5c1.9 0 3.2 1 4 2.2.8-1.2 2.1-2.2 4-2.2 3.3 0 5.4 3 4.2 6.3C19.5 15.4 12 20 12 20z" /></symbol>
+      <symbol id="icon-walk" viewBox="0 0 24 24"><path d="M13 4.2a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM9.7 8.2h3.4l2.2 4.3 3.1 1.5-.9 1.9-3.8-1.8-1-2-1.6 3.4 2.3 2.6-1.6 1.4-3-3.5 1.8-4.1-2 .5-1.9 3.1-1.8-1.1 2.4-4z" /></symbol>
+      <symbol id="icon-record" viewBox="0 0 24 24"><path d="M6 4h12a1 1 0 0 1 1 1v15l-3-1.7-3 1.7-3-1.7L7 20V5a1 1 0 0 1 1-1Zm3 5h6V7H9zm0 4h7v-2H9zm0 4h5v-2H9z" /></symbol>
+      <symbol id="icon-dog" viewBox="0 0 24 24"><path d="M5 10 3 7.5 4.5 5 8 7h8l3.5-2L21 7.5 19 10v6a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4zm5 2.5a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4Zm4 0a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4Zm-2 5 2.2-2.3H9.8z" /></symbol>
+      <symbol id="icon-bell" viewBox="0 0 24 24"><path d="M12 22a2.5 2.5 0 0 0 2.4-1.8H9.6A2.5 2.5 0 0 0 12 22Zm7-5-2-2.2V10a5 5 0 0 0-10 0v4.8L5 17v1.5h14z" /></symbol>
+      <symbol id="icon-plus" viewBox="0 0 24 24"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z" /></symbol>
+      <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M8 5V3h8v2h5v2h-2l-1 14H6L5 7H3V5zm1 2 .8 12h6.4L17 7zm1.5 2h2v8h-2zm4 0h2v8h-2z" /></symbol>
+      <symbol id="icon-chat" viewBox="0 0 24 24"><path d="M4 5.5A3.5 3.5 0 0 1 7.5 2h9A3.5 3.5 0 0 1 20 5.5v6A3.5 3.5 0 0 1 16.5 15h-5.8L6 19v-4.2a3.5 3.5 0 0 1-2-3.1zm4 2h8v-2H8zm0 4h6v-2H8z" /></symbol>
+    </svg>
+
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="PetPulse">
+          <span class="brand-mark">P</span>
+          <span>
+            <strong>PetPulse</strong>
+            <small>狗狗健康助手</small>
+          </span>
+        </a>
+
+        <nav class="top-nav" aria-label="页面">
+          <button class="nav-item active" type="button" data-view="intro"><svg><use href="#icon-home"></use></svg>引导</button>
+          <button class="nav-item" type="button" data-view="today"><svg><use href="#icon-heart"></use></svg>今日</button>
+          <button class="nav-item" type="button" data-view="walk"><svg><use href="#icon-walk"></use></svg>散步</button>
+          <button class="nav-item" type="button" data-view="records"><svg><use href="#icon-record"></use></svg>记录</button>
+          <button class="nav-item" type="button" data-view="profile"><svg><use href="#icon-dog"></use></svg>档案</button>
+          <button class="nav-item" type="button" data-view="assistant"><svg><use href="#icon-chat"></use></svg>健康助手</button>
+          <button class="nav-item" type="button" data-view="alerts"><svg><use href="#icon-bell"></use></svg>提醒</button>
+        </nav>
+
+        <button class="refresh-button" id="simulateBtn" type="button">刷新数据</button>
+      </header>
+
+      <main class="content">
+        <section class="view active" id="intro" aria-labelledby="introTitle">
+          <div class="hero-panel">
+            <div class="hero-copy">
+              <p class="eyebrow">陪伴每一次出门</p>
+              <h1 id="introTitle">更懂狗狗的散步助手</h1>
+              <p class="soft-copy">把散步、健康、距离提醒和日常记录放在一起，打开就能知道今天该怎么陪它运动。</p>
+              <div class="hero-actions">
+                <button class="primary-action" type="button" data-go="today">查看今日状态</button>
+                <button class="secondary-action" type="button" data-go="walk">开始散步</button>
+              </div>
+            </div>
+            <div class="hero-image">
+              <img src="./assets/petpulse-hero.png" alt="佩戴智能项圈的狗和智能牵引手柄" />
+            </div>
+          </div>
+
+          <div class="intro-grid">
+            <article class="mini-card">
+              <span class="soft-icon"><svg><use href="#icon-heart"></use></svg></span>
+              <strong>健康看板</strong>
+              <p>热量、心率、体温和距离集中展示</p>
+            </article>
+            <article class="mini-card">
+              <span class="soft-icon"><svg><use href="#icon-walk"></use></svg></span>
+              <strong>散步轨迹</strong>
+              <p>时长、距离、速度曲线同步记录</p>
+            </article>
+            <article class="mini-card">
+              <span class="soft-icon"><svg><use href="#icon-record"></use></svg></span>
+              <strong>日常记录</strong>
+              <p>保留每日散步和便便健康记录</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" id="today" aria-labelledby="todayTitle">
+          <div class="view-header">
+            <div>
+              <p class="eyebrow">今日概览</p>
+              <h1 id="todayTitle">Luna 今天很好</h1>
+              <p class="view-subtitle">根据当前运动和健康数据生成今日建议</p>
+            </div>
+            <span class="status-pill good" id="healthPill">健康</span>
+          </div>
+
+          <div class="home-grid">
+            <article class="score-card">
+              <span><svg><use href="#icon-heart"></use></svg>健康分</span>
+              <strong id="safetyScore">92</strong>
+              <div class="progress-track"><span id="calorieProgressBar"></span></div>
+              <p>热量 <b id="caloriesNow">128</b> / <b id="calorieTarget">350</b> kcal</p>
+            </article>
+            <article class="metric-card">
+              <span>速度</span>
+              <strong><b id="speedNow">4.8</b> km/h</strong>
+              <p id="paceLabel">快走</p>
+            </article>
+            <article class="metric-card">
+              <span>心率</span>
+              <strong><b id="heartRateNow">112</b> bpm</strong>
+              <p id="heartLabel">正常</p>
+            </article>
+            <article class="metric-card">
+              <span>体温</span>
+              <strong><b id="tempNow">38.6</b> °C</strong>
+              <p id="tempLabel">正常</p>
+            </article>
+            <article class="metric-card">
+              <span>距离</span>
+              <strong><b id="distanceNow">3.2</b> m</strong>
+              <p id="distanceLabel">安全</p>
+            </article>
+          </div>
+
+          <div class="home-row">
+            <article class="panel">
+              <div class="panel-heading">
+                <span>今日建议</span>
+                <span id="speedTarget">3.5-6 km/h</span>
+              </div>
+              <div class="recommend-grid">
+                <div><span>时长</span><strong><b id="walkTarget">75</b> min</strong></div>
+                <div><span>热量</span><strong><b id="recommendCalories">350</b> kcal</strong></div>
+                <div><span>完成</span><strong id="walkPercent">60%</strong></div>
+              </div>
+            </article>
+            <article class="panel">
+              <div class="panel-heading">
+                <span>温柔提醒</span>
+                <span id="todayAlertCount">2 条</span>
+              </div>
+              <ul class="simple-list">
+                <li id="careTip">注意髋关节和体重管理</li>
+                <li id="homePoopTip">便便记录健康</li>
+                <li id="homeWalkTip">晚间散步未开始</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" id="walk" aria-labelledby="walkTitle">
+          <div class="view-header">
+            <div>
+              <p class="eyebrow">散步中</p>
+              <h1 id="walkTitle">陪 Luna 走一圈</h1>
+              <p class="view-subtitle">轨迹、时长、消耗和曲线都在这里</p>
+            </div>
+            <div class="mode-switch" role="group" aria-label="模式">
+              <button class="mode-button active" type="button" data-mode="leash">有绳</button>
+              <button class="mode-button" type="button" data-mode="free">无绳</button>
+            </div>
+          </div>
+
+          <article class="walk-module">
+            <div class="walk-map" aria-label="轨迹">
+              <span class="map-dot owner">主人</span>
+              <span class="map-dot dog" id="mapDogName">Luna</span>
+              <span class="fence-ring"></span>
+              <svg viewBox="0 0 900 340" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M34 280 C 160 160, 265 305, 410 178 S 648 98, 860 182" />
+              </svg>
+            </div>
+            <div class="walk-stats">
+              <article><span>时长</span><strong><b id="walkMinutes">45</b> min</strong></article>
+              <article><span>消耗</span><strong><b id="walkCalories">128</b> kcal</strong></article>
+              <article><span>平均心率</span><strong><b id="avgHeart">116</b> bpm</strong></article>
+              <article><span>距离</span><strong><b id="walkDistance">3.2</b> km</strong></article>
+            </div>
+            <div class="chart-grid">
+              <article class="chart-panel">
+                <div class="panel-heading"><span>心率曲线</span><span id="heartRange">96-138 bpm</span></div>
+                <svg class="line-chart" viewBox="0 0 420 180" role="img" aria-label="心率曲线">
+                  <g class="grid-lines"><line x1="0" y1="45" x2="420" y2="45" /><line x1="0" y1="95" x2="420" y2="95" /><line x1="0" y1="145" x2="420" y2="145" /></g>
+                  <polyline class="heart-line" id="heartLine" points="0,128 48,118 96,112 144,99 192,88 240,86 288,96 336,104 420,92" />
+                </svg>
+              </article>
+              <article class="chart-panel">
+                <div class="panel-heading"><span>速度曲线</span><span id="speedRange">2.8-6.1 km/h</span></div>
+                <svg class="line-chart" viewBox="0 0 420 180" role="img" aria-label="速度曲线">
+                  <g class="grid-lines"><line x1="0" y1="45" x2="420" y2="45" /><line x1="0" y1="95" x2="420" y2="95" /><line x1="0" y1="145" x2="420" y2="145" /></g>
+                  <polyline class="speed-line" id="speedLine" points="0,145 52,130 105,120 158,92 210,88 262,98 315,76 368,96 420,86" />
+                </svg>
+              </article>
+            </div>
+          </article>
+        </section>
+
+        <section class="view" id="records" aria-labelledby="recordsTitle">
+          <div class="view-header">
+            <div>
+              <p class="eyebrow">生活记录</p>
+              <h1 id="recordsTitle">每天都有迹可循</h1>
+              <p class="view-subtitle">散步和便便记录会按天保留</p>
+            </div>
+          </div>
+          <div class="record-grid">
+            <article class="panel"><div class="panel-heading"><span>散步记录</span><span>7 天</span></div><div class="record-list" id="walkRecordList"></div></article>
+            <article class="panel"><div class="panel-heading"><span>便便记录</span><span>7 天</span></div><div class="record-list" id="poopRecordList"></div></article>
+          </div>
+        </section>
+
+        <section class="view" id="profile" aria-labelledby="profileTitle">
+          <div class="view-header">
+            <div>
+              <p class="eyebrow">家庭成员</p>
+              <h1 id="profileTitle">管理狗狗档案</h1>
+              <p class="view-subtitle">多只狗狗可以分别保存体型和运动目标</p>
+            </div>
+            <button class="primary-action small-action" id="addDogBtn" type="button"><svg><use href="#icon-plus"></use></svg>新增狗狗</button>
+          </div>
+
+          <div class="dog-profile-toolbar">
+            <span id="dogCount">2 只狗狗</span>
+            <span id="activeDogHint">当前查看 Luna</span>
+          </div>
+          <div class="dog-profile-list" id="dogList"></div>
+        </section>
+
+        <section class="view" id="assistant" aria-labelledby="assistantTitle">
+          <div class="view-header">
+            <div>
+              <p class="eyebrow">健康助手</p>
+              <h1 id="assistantTitle">随时问问养护建议</h1>
+              <p class="view-subtitle">可以询问散步量、便便状态、体温心率和日常护理</p>
+            </div>
+          </div>
+
+          <div class="assistant-layout">
+            <article class="assistant-panel">
+              <div class="assistant-context">
+                <div>
+                  <span>当前分析</span>
+                  <strong id="assistantDogName">Luna</strong>
+                </div>
+                <div>
+                  <span>今日目标</span>
+                  <strong id="assistantTarget">75 min · 350 kcal</strong>
+                </div>
+                <div>
+                  <span>AI 状态</span>
+                  <strong id="assistantStatus">检测中</strong>
+                </div>
+              </div>
+              <div class="chat-box" id="chatBox">
+                <div class="chat-message assistant">我会结合当前狗狗档案、今日运动量和健康数据来回答。你可以问“今天还要走多久”“便便偏软怎么办”“心率偏高要不要休息”。</div>
+              </div>
+              <form class="chat-form" id="chatForm">
+                <input id="chatInput" type="text" placeholder="例如：今天 Luna 还需要散步多久" autocomplete="off" />
+                <button class="primary-action" type="submit">发送</button>
+              </form>
+            </article>
+
+            <aside class="quick-ask-panel">
+              <div class="panel-heading"><span>快速提问</span><span>DeepSeek</span></div>
+              <button type="button" data-question="根据当前档案，今天还建议散步多久">今天还要走多久</button>
+              <button type="button" data-question="便便偏软时应该注意什么">便便偏软怎么办</button>
+              <button type="button" data-question="心率偏高时散步要怎么调整">心率偏高怎么处理</button>
+              <button type="button" data-question="按照它的品种和年龄，日常散步要注意什么">品种护理建议</button>
+            </aside>
+          </div>
+        </section>
+
+        <section class="view" id="alerts" aria-labelledby="alertsTitle">
+          <div class="view-header">
+            <div>
+              <p class="eyebrow">安心守护</p>
+              <h1 id="alertsTitle">提醒更温和</h1>
+              <p class="view-subtitle">跑远、牵引过紧和状态异常都会先轻提醒</p>
+            </div>
+          </div>
+          <div class="alert-grid">
+            <article class="panel"><span>牵引力度</span><strong><b id="tensionNow">8.4</b> N</strong><p id="tensionHint">正常</p></article>
+            <article class="panel"><span>牵引状态</span><strong id="lockState">未锁定</strong><p>温和提醒</p></article>
+            <article class="panel"><span>安全距离</span><strong id="fenceNow">10 m</strong><p id="fenceHint">安全</p></article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
