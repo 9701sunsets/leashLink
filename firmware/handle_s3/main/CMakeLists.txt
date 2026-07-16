@@ -4,7 +4,10 @@ idf_component_register(
         "../board/power.c"
         "../drivers/hx711_driver.c"
         "../drivers/gps_driver.c"
+        "../drivers/button_driver.c"
+        "../drivers/light_sensor.c"
         "../drivers/oled_driver.c"
+        "../drivers/heart_sensor.c"
         "../drivers/servo_driver.c"
         "../drivers/buzzer_driver.c"
         "../drivers/motor_driver.c"
@@ -17,11 +20,14 @@ idf_component_register(
         "../communication/espnow_handle.c"
         "../communication/mqtt_client.c"
         "../communication/ble_pairing.c"
+        "../communication/i2c_bus.c"
+        "../communication/wifi_manager.c"
         "../tasks/task_tension.c"
         "../tasks/task_safety.c"
         "../tasks/task_actuator.c"
         "../tasks/task_ui.c"
         "../tasks/task_cloud.c"
+        "../tasks/task_sensor_board.c"
     INCLUDE_DIRS
         "."
         "../board"
@@ -29,5 +35,16 @@ idf_component_register(
         "../services"
         "../communication"
         "../tasks"
+    REQUIRES
+        esp_adc
+        esp_driver_gpio
+        esp_driver_i2c
+        esp_driver_ledc
+        esp_driver_uart
+        esp_timer
+        esp_wifi
+        esp_event
+        esp_netif
+        nvs_flash
+        mqtt
 )
-

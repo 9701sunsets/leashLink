@@ -4,7 +4,7 @@
 
 #include "esp_log.h"
 
-#include "mqtt_client.h"
+#include "ll_mqtt_client.h"
 #include "session_service.h"
 
 static const char *TAG = "cloud_service";
@@ -78,4 +78,3 @@ esp_err_t cloud_service_publish_event(const ll_safety_event_t *event)
     session_service_count_event(event->type);
     return mqtt_client_ll_publish("leashlink/" LL_PAIR_ID "/event", payload, 1);
 }
-

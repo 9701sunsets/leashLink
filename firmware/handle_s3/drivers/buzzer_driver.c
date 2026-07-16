@@ -25,10 +25,10 @@ esp_err_t buzzer_init(void)
  */
 esp_err_t buzzer_beep(uint16_t duration_ms)
 {
-    gpio_set_level(HANDLE_BUZZER_GPIO, 1);
+    gpio_set_level(HANDLE_BUZZER_GPIO, 0);
     if (duration_ms > 0) {
         vTaskDelay(pdMS_TO_TICKS(duration_ms));
-        gpio_set_level(HANDLE_BUZZER_GPIO, 0);
+        gpio_set_level(HANDLE_BUZZER_GPIO, 1);
     }
     return ESP_OK;
 }
@@ -38,7 +38,6 @@ esp_err_t buzzer_beep(uint16_t duration_ms)
  */
 esp_err_t buzzer_stop(void)
 {
-    gpio_set_level(HANDLE_BUZZER_GPIO, 0);
+    gpio_set_level(HANDLE_BUZZER_GPIO, 1);
     return ESP_OK;
 }
-

@@ -25,15 +25,16 @@ void task_safety(void *arg)
         ll_tension_sample_t tension = tension_service_get_latest();
         ll_collar_telemetry_t collar = espnow_handle_get_collar();
         ll_gps_fix_t gps = gps_get_latest();
+        bool link_ok = espnow_handle_link_ok();
 
         ll_safety_input_t input = {
             .tension_n = tension.tension_n,
             .tension_peak_n = tension.tension_peak_n,
             .collar_accel_peak_g = collar.accel_peak_g,
             .motion_state = collar.motion_state,
-            .distance_est_m = distance_service_estimate_from_rssi(collar.rssi_dbm),
+            .distance_est_m = link_ok ? distance_service_estimate_from_rssi(collar.rssi_dbm) : 0.0f,
             .gps_fence_breach = distance_service_is_fence_breach(&gps),
-            .link_ok = espnow_handle_link_ok(),
+            .link_ok = link_ok,
             .ts_ms = esp_timer_get_time() / 1000,
         };
 
@@ -59,4 +60,3 @@ void task_safety(void *arg)
         vTaskDelay(pdMS_TO_TICKS(50));
     }
 }
-

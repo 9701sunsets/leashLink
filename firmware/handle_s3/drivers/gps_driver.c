@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "driver/gpio.h"
 #include "driver/uart.h"
 #include "esp_log.h"
 #include "esp_timer.h"
@@ -79,7 +80,18 @@ esp_err_t gps_init(void)
     ESP_ERROR_CHECK(uart_param_config(HANDLE_GPS_UART_NUM, &cfg));
     ESP_ERROR_CHECK(uart_set_pin(HANDLE_GPS_UART_NUM, HANDLE_GPS_TX_GPIO, HANDLE_GPS_RX_GPIO,
                                  UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
-    ESP_LOGI(TAG, "initialized");
+
+    gpio_config_t pps_cfg = {
+        .pin_bit_mask = 1ULL << HANDLE_GPS_PPS_GPIO,
+        .mode = GPIO_MODE_INPUT,
+        .pull_up_en = GPIO_PULLUP_DISABLE,
+        .pull_down_en = GPIO_PULLDOWN_DISABLE,
+        .intr_type = GPIO_INTR_DISABLE,
+    };
+    ESP_ERROR_CHECK(gpio_config(&pps_cfg));
+
+    ESP_LOGI(TAG, "initialized: ESP_TX=GPIO%d ESP_RX=GPIO%d PPS=GPIO%d",
+             HANDLE_GPS_TX_GPIO, HANDLE_GPS_RX_GPIO, HANDLE_GPS_PPS_GPIO);
     return ESP_OK;
 }
 
