@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "esp_log.h"
@@ -50,6 +51,68 @@ static esp_err_t oled_fill(uint8_t pattern)
         ESP_ERROR_CHECK(oled_data(line, sizeof(line)));
     }
     return ESP_OK;
+}
+
+static void font5x7(char c, uint8_t out[5])
+{
+    memset(out, 0, 5);
+    switch (c) {
+    case '0': memcpy(out, (uint8_t[]){0x3E,0x51,0x49,0x45,0x3E}, 5); break;
+    case '1': memcpy(out, (uint8_t[]){0x00,0x42,0x7F,0x40,0x00}, 5); break;
+    case '2': memcpy(out, (uint8_t[]){0x42,0x61,0x51,0x49,0x46}, 5); break;
+    case '3': memcpy(out, (uint8_t[]){0x21,0x41,0x45,0x4B,0x31}, 5); break;
+    case '4': memcpy(out, (uint8_t[]){0x18,0x14,0x12,0x7F,0x10}, 5); break;
+    case '5': memcpy(out, (uint8_t[]){0x27,0x45,0x45,0x45,0x39}, 5); break;
+    case '6': memcpy(out, (uint8_t[]){0x3C,0x4A,0x49,0x49,0x30}, 5); break;
+    case '7': memcpy(out, (uint8_t[]){0x01,0x71,0x09,0x05,0x03}, 5); break;
+    case '8': memcpy(out, (uint8_t[]){0x36,0x49,0x49,0x49,0x36}, 5); break;
+    case '9': memcpy(out, (uint8_t[]){0x06,0x49,0x49,0x29,0x1E}, 5); break;
+    case 'A': memcpy(out, (uint8_t[]){0x7E,0x11,0x11,0x11,0x7E}, 5); break;
+    case 'B': memcpy(out, (uint8_t[]){0x7F,0x49,0x49,0x49,0x36}, 5); break;
+    case 'C': memcpy(out, (uint8_t[]){0x3E,0x41,0x41,0x41,0x22}, 5); break;
+    case 'D': memcpy(out, (uint8_t[]){0x7F,0x41,0x41,0x22,0x1C}, 5); break;
+    case 'E': memcpy(out, (uint8_t[]){0x7F,0x49,0x49,0x49,0x41}, 5); break;
+    case 'F': memcpy(out, (uint8_t[]){0x7F,0x09,0x09,0x09,0x01}, 5); break;
+    case 'G': memcpy(out, (uint8_t[]){0x3E,0x41,0x49,0x49,0x7A}, 5); break;
+    case 'H': memcpy(out, (uint8_t[]){0x7F,0x08,0x08,0x08,0x7F}, 5); break;
+    case 'I': memcpy(out, (uint8_t[]){0x00,0x41,0x7F,0x41,0x00}, 5); break;
+    case 'K': memcpy(out, (uint8_t[]){0x7F,0x08,0x14,0x22,0x41}, 5); break;
+    case 'L': memcpy(out, (uint8_t[]){0x7F,0x40,0x40,0x40,0x40}, 5); break;
+    case 'M': memcpy(out, (uint8_t[]){0x7F,0x02,0x0C,0x02,0x7F}, 5); break;
+    case 'N': memcpy(out, (uint8_t[]){0x7F,0x04,0x08,0x10,0x7F}, 5); break;
+    case 'O': memcpy(out, (uint8_t[]){0x3E,0x41,0x41,0x41,0x3E}, 5); break;
+    case 'P': memcpy(out, (uint8_t[]){0x7F,0x09,0x09,0x09,0x06}, 5); break;
+    case 'R': memcpy(out, (uint8_t[]){0x7F,0x09,0x19,0x29,0x46}, 5); break;
+    case 'S': memcpy(out, (uint8_t[]){0x46,0x49,0x49,0x49,0x31}, 5); break;
+    case 'T': memcpy(out, (uint8_t[]){0x01,0x01,0x7F,0x01,0x01}, 5); break;
+    case 'U': memcpy(out, (uint8_t[]){0x3F,0x40,0x40,0x40,0x3F}, 5); break;
+    case 'V': memcpy(out, (uint8_t[]){0x1F,0x20,0x40,0x20,0x1F}, 5); break;
+    case 'Y': memcpy(out, (uint8_t[]){0x07,0x08,0x70,0x08,0x07}, 5); break;
+    case ':': memcpy(out, (uint8_t[]){0x00,0x36,0x36,0x00,0x00}, 5); break;
+    case '-': memcpy(out, (uint8_t[]){0x08,0x08,0x08,0x08,0x08}, 5); break;
+    case '/': memcpy(out, (uint8_t[]){0x20,0x10,0x08,0x04,0x02}, 5); break;
+    case '.': memcpy(out, (uint8_t[]){0x00,0x60,0x60,0x00,0x00}, 5); break;
+    case '%': memcpy(out, (uint8_t[]){0x23,0x13,0x08,0x64,0x62}, 5); break;
+    default: break;
+    }
+}
+
+static esp_err_t oled_draw_text(uint8_t page, const char *text)
+{
+    uint8_t pixels[128] = {0};
+    uint8_t col = 0;
+    for (const char *p = text; p && *p && col < 122; ++p) {
+        uint8_t glyph[5];
+        char c = *p;
+        if (c >= 'a' && c <= 'z') {
+            c = (char)(c - 'a' + 'A');
+        }
+        font5x7(c, glyph);
+        memcpy(&pixels[col], glyph, 5);
+        col += 6;
+    }
+    ESP_ERROR_CHECK(oled_set_page_col(page, 0));
+    return oled_data(pixels, sizeof(pixels));
 }
 
 /**
@@ -105,7 +168,18 @@ esp_err_t oled_show_status(const ll_tension_sample_t *tension,
              tension ? tension->tension_peak_n : 0.0f,
              collar ? collar->motion_state : LL_MOTION_UNKNOWN,
              safety_state);
-    return ESP_OK;
+    char l0[22];
+    char l1[22];
+    char l2[22];
+    char l3[22];
+    snprintf(l0, sizeof(l0), "BAT:%d%% SAF:%d", battery_pct, safety_state);
+    snprintf(l1, sizeof(l1), "TEN:%dN PK:%d", (int)(tension ? tension->tension_n : 0.0f),
+             (int)(tension ? tension->tension_peak_n : 0.0f));
+    snprintf(l2, sizeof(l2), "M:%u CB:%u",
+             (unsigned)(collar ? collar->motion_state : LL_MOTION_UNKNOWN),
+             (unsigned)(collar ? collar->battery_pct : 0));
+    snprintf(l3, sizeof(l3), "RSSI:%d", collar ? collar->rssi_dbm : -100);
+    return oled_show_lines(l0, l1, l2, l3);
 }
 
 /**
@@ -116,17 +190,21 @@ esp_err_t oled_show_status(const ll_tension_sample_t *tension,
 esp_err_t oled_show_message(const char *line1, const char *line2)
 {
     ESP_LOGI(TAG, "%s | %s", line1 ? line1 : "", line2 ? line2 : "");
+    return oled_show_lines(line1, line2, NULL, NULL);
+}
+
+esp_err_t oled_show_lines(const char *line0,
+                          const char *line1,
+                          const char *line2,
+                          const char *line3)
+{
     if (!s_ready) {
         return ESP_OK;
     }
-
-    uint8_t line[128] = {0};
-    memset(line, line1 && line1[0] ? 0x18 : 0x00, sizeof(line));
-    ESP_ERROR_CHECK(oled_set_page_col(1, 0));
-    ESP_ERROR_CHECK(oled_data(line, sizeof(line)));
-
-    memset(line, line2 && line2[0] ? 0x3C : 0x00, sizeof(line));
-    ESP_ERROR_CHECK(oled_set_page_col(3, 0));
-    ESP_ERROR_CHECK(oled_data(line, sizeof(line)));
+    ESP_ERROR_CHECK(oled_fill(0x00));
+    ESP_ERROR_CHECK(oled_draw_text(0, line0 ? line0 : ""));
+    ESP_ERROR_CHECK(oled_draw_text(2, line1 ? line1 : ""));
+    ESP_ERROR_CHECK(oled_draw_text(4, line2 ? line2 : ""));
+    ESP_ERROR_CHECK(oled_draw_text(6, line3 ? line3 : ""));
     return ESP_OK;
 }

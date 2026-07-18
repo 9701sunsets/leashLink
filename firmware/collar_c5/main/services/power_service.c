@@ -7,6 +7,7 @@
 
 static const char *TAG = "power";
 static adc_oneshot_unit_handle_t s_adc;
+static bool s_battery_raw_warned;
 
 /**
  * 初始化电源服务
@@ -40,6 +41,15 @@ uint8_t power_service_get_battery_pct(void)
     if (!s_adc || adc_oneshot_read(s_adc, COLLAR_BAT_ADC_CHANNEL, &raw) != ESP_OK) {
         return 100;
     }
+
+    if (raw < 100) {
+        if (!s_battery_raw_warned) {
+            ESP_LOGW(TAG, "battery ADC raw=%d is not calibrated/connected; report 100%% for bring-up", raw);
+            s_battery_raw_warned = true;
+        }
+        return 100;
+    }
+
     int pct = (raw - 1800) * 100 / (3000 - 1800);
     if (pct < 0) pct = 0;
     if (pct > 100) pct = 100;

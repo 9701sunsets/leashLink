@@ -28,6 +28,7 @@ idf_component_register(
         "../tasks/task_ui.c"
         "../tasks/task_cloud.c"
         "../tasks/task_sensor_board.c"
+        "../tasks/task_handle_modules.c"
     INCLUDE_DIRS
         "."
         "../board"

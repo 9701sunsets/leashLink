@@ -1,0 +1,25 @@
+menu "leashLink Collar C5"
+
+config COLLAR_WIFI_SEED_ON_BOOT
+    bool "Seed collar WiFi credentials to NVS on boot"
+    default n
+
+config COLLAR_WIFI_SSID
+    string "Collar WiFi SSID"
+    default ""
+
+config COLLAR_WIFI_PASSWORD
+    string "Collar WiFi password"
+    default ""
+
+config COLLAR_ENABLE_LEGACY_BUZZER
+    bool "Enable legacy active buzzer GPIO"
+    default n
+
+config COLLAR_ENABLE_SPEAKER_GPIO_TEST
+    bool "Enable provisional speaker GPIO test"
+    default n
+    help
+        Keep disabled until PA_CTL/PDM_P/PDM_N are confirmed from the board schematic.
+
+endmenu

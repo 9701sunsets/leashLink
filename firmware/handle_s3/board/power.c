@@ -1,5 +1,7 @@
 #include "power.h"
 
+#include <stdbool.h>
+
 #include "esp_adc/adc_oneshot.h"
 #include "esp_log.h"
 
@@ -7,12 +9,17 @@
 
 static const char *TAG = "power";
 static adc_oneshot_unit_handle_t s_adc;
+static bool s_initialized;
 
 /**
  * 初始化电源管理
  */
 esp_err_t power_init(void)
 {
+    if (s_initialized) {
+        return ESP_OK;
+    }
+
     adc_oneshot_unit_init_cfg_t init_cfg = {
         .unit_id = ADC_UNIT_1,
     };
@@ -28,6 +35,7 @@ esp_err_t power_init(void)
     };
     ESP_ERROR_CHECK(adc_oneshot_config_channel(s_adc, HANDLE_LIGHT_ADC_CHANNEL, &chan_cfg));
     ESP_ERROR_CHECK(adc_oneshot_config_channel(s_adc, HANDLE_BAT_ADC_CHANNEL, &chan_cfg));
+    s_initialized = true;
     return ESP_OK;
 }
 
@@ -53,10 +61,20 @@ int power_get_battery_pct(void)
 int power_get_light_lux_est(void)
 {
     int raw = 0;
-    if (!s_adc || adc_oneshot_read(s_adc, HANDLE_LIGHT_ADC_CHANNEL, &raw) != ESP_OK) {
+    if (power_read_light_raw(&raw) != ESP_OK) {
         return 100;
     }
 
     return raw / 4;
 }
 
+esp_err_t power_read_light_raw(int *raw)
+{
+    if (!raw) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    if (!s_adc) {
+        return ESP_ERR_INVALID_STATE;
+    }
+    return adc_oneshot_read(s_adc, HANDLE_LIGHT_ADC_CHANNEL, raw);
+}

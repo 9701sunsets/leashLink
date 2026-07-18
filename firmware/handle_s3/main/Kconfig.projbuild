@@ -2,10 +2,24 @@ menu "leashLink"
 
 config LEASHLINK_SENSOR_BRINGUP_ONLY
     bool "Sensor bring-up board only"
-    default y
+    default n
     help
         Enable this when only the light sensor, I2C heart sensor, and OLED are connected.
         It skips HX711, servo, motor, buzzer, GPS, ESP-NOW safety, and cloud telemetry tasks.
+
+config LEASHLINK_LINK_BRINGUP_ONLY
+    bool "ESP-NOW/BLE link bring-up only"
+    default n
+    help
+        Enable this to test handle_s3 <-> collar_c5 ESP-NOW/BLE without HX711, servo, GPS, MQTT, or safety tasks.
+
+config LEASHLINK_HANDLE_MODULE_BRINGUP_ONLY
+    bool "Handle connected modules bring-up only"
+    default y
+    help
+        Enable this for the current handle_s3 wiring: servo, battery, light, GPS,
+        buzzer, heart sensor, OLED, and ESP-NOW/BLE collar link. It skips HX711,
+        motor, MQTT, and full safety tasks while printing realtime module data.
 
 config LEASHLINK_WIFI_SEED_ON_BOOT
     bool "Seed WiFi credentials to NVS on boot"

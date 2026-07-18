@@ -4,12 +4,15 @@ idf_component_register(
         "drivers/imu_driver.c"
         "drivers/led_driver.c"
         "drivers/buzzer_driver.c"
+        "drivers/speaker_driver.c"
         "drivers/vibration_driver.c"
         "services/motion_service.c"
         "services/feedback_service.c"
         "services/power_service.c"
         "communication/espnow_handle.c"
         "communication/ble_adv.c"
+        "communication/i2c_bus.c"
+        "communication/wifi_manager.c"
         "tasks/task_imu.c"
         "tasks/task_feedback.c"
     INCLUDE_DIRS
@@ -19,4 +22,13 @@ idf_component_register(
         "services"
         "communication"
         "tasks"
+    REQUIRES
+        esp_adc
+        esp_driver_gpio
+        esp_driver_i2c
+        esp_event
+        esp_netif
+        esp_timer
+        esp_wifi
+        nvs_flash
 )

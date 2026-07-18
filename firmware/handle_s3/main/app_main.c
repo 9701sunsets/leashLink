@@ -29,6 +29,7 @@ void task_actuator(void *arg);
 void task_ui(void *arg);
 void task_cloud(void *arg);
 void task_sensor_board(void *arg);
+void task_handle_modules(void *arg);
 
 static const char *TAG = "app_main";
 
@@ -82,7 +83,47 @@ static void init_sensor_bringup_board(void)
     oled_show_message("leashLink", "sensors ready");
 }
 
+static void init_link_bringup(void)
+{
+    ESP_ERROR_CHECK(session_service_init());
+    ESP_ERROR_CHECK(espnow_handle_init());
+    ESP_ERROR_CHECK(ble_pairing_init());
+    ESP_ERROR_CHECK(ble_pairing_start_scan());
+    ESP_LOGI(TAG, "link bring-up started: ESP-NOW/BLE only");
+}
+
 #if !CONFIG_LEASHLINK_SENSOR_BRINGUP_ONLY
+static void init_handle_module_bringup(void)
+{
+    ESP_ERROR_CHECK(session_service_init());
+    ESP_ERROR_CHECK(power_init());
+    ESP_ERROR_CHECK(button_driver_init());
+    ESP_ERROR_CHECK(light_sensor_init());
+    ESP_ERROR_CHECK(buzzer_init());
+    ESP_ERROR_CHECK(gps_init());
+    ESP_ERROR_CHECK(distance_service_init());
+    ESP_ERROR_CHECK(leash_control_init());
+    ESP_ERROR_CHECK(espnow_handle_init());
+    ESP_ERROR_CHECK(ble_pairing_init());
+    ESP_ERROR_CHECK(ble_pairing_start_scan());
+
+    esp_err_t oled_err = oled_init();
+    if (oled_err != ESP_OK) {
+        ESP_LOGW(TAG, "OLED init failed: %s", esp_err_to_name(oled_err));
+    }
+
+    esp_err_t heart_err = heart_sensor_init();
+    if (heart_err != ESP_OK) {
+        ESP_LOGW(TAG, "heart sensor init failed: %s", esp_err_to_name(heart_err));
+    }
+
+    xTaskCreate(task_gps, "task_gps", 4096, NULL, 4, NULL);
+    xTaskCreate(task_handle_modules, "task_handle_modules", 4096, NULL, 4, NULL);
+    buzzer_beep(80);
+    oled_show_lines("LL S3 READY", "MODULE TEST", "WAIT DATA", NULL);
+    ESP_LOGI(TAG, "handle module bring-up started");
+}
+
 static void init_full_handle(void)
 {
     ESP_ERROR_CHECK(power_init());
@@ -98,6 +139,7 @@ static void init_full_handle(void)
     ESP_ERROR_CHECK(session_service_init());
     ESP_ERROR_CHECK(espnow_handle_init());
     ESP_ERROR_CHECK(ble_pairing_init());
+    ESP_ERROR_CHECK(ble_pairing_start_scan());
     ESP_ERROR_CHECK(cloud_service_init());
 
     xTaskCreate(task_tension, "task_tension", 4096, NULL, 8, NULL);
@@ -119,6 +161,10 @@ void app_main(void)
 
 #if CONFIG_LEASHLINK_SENSOR_BRINGUP_ONLY
     init_sensor_bringup_board();
+#elif CONFIG_LEASHLINK_LINK_BRINGUP_ONLY
+    init_link_bringup();
+#elif CONFIG_LEASHLINK_HANDLE_MODULE_BRINGUP_ONLY
+    init_handle_module_bringup();
 #else
     init_full_handle();
 #endif

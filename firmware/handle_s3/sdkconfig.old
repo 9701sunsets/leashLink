@@ -987,15 +987,21 @@ CONFIG_PARTITION_TABLE_MD5=y
 # end of Partition Table
 
 #
-# leashLink WiFi
+# leashLink
 #
+# default:
+CONFIG_LEASHLINK_SENSOR_BRINGUP_ONLY=y
+# default:
+# CONFIG_LEASHLINK_LINK_BRINGUP_ONLY is not set
 # default:
 # CONFIG_LEASHLINK_WIFI_SEED_ON_BOOT is not set
 # default:
 CONFIG_LEASHLINK_WIFI_SSID=""
 # default:
 CONFIG_LEASHLINK_WIFI_PASSWORD=""
-# end of leashLink WiFi
+# default:
+CONFIG_LEASHLINK_MQTT_URI="mqtt://192.168.43.1:1883"
+# end of leashLink
 
 #
 # Compiler options

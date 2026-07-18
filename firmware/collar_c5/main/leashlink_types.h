@@ -7,6 +7,25 @@
 extern "C" {
 #endif
 
+#define LL_PROTOCOL_VERSION 1
+#define LL_PAIR_ID "LL-P-0001"
+#define LL_HANDLE_ID "LL-H-S3-0001"
+#define LL_COLLAR_ID "LL-C-C5-0001"
+
+typedef enum {
+    LL_MSG_PAIR_REQ = 0x01,
+    LL_MSG_PAIR_ACK = 0x02,
+    LL_MSG_HEARTBEAT = 0x10,
+    LL_MSG_COLLAR_TELEMETRY = 0x11,
+    LL_MSG_HANDLE_TELEMETRY = 0x12,
+    LL_MSG_ALERT_EVENT = 0x20,
+    LL_MSG_CONTROL_CMD = 0x30,
+    LL_MSG_CONTROL_ACK = 0x31,
+    LL_MSG_CONFIG_SET = 0x40,
+    LL_MSG_CONFIG_ACK = 0x41,
+    LL_MSG_LINK_DIAG = 0x50,
+} ll_msg_type_t;
+
 typedef enum {
     LL_MOTION_IDLE = 0,// 静止
     LL_MOTION_WALK = 1,// 走路

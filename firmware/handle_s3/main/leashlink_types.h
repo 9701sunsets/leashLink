@@ -9,7 +9,8 @@ extern "C" {
 
 #define LL_PROTOCOL_VERSION 1// 协议版本
 #define LL_PAIR_ID "LL-P-0001"// 配对ID
-#define LL_HANDLE_ID "LL-H-C3-0001"//board ID
+#define LL_HANDLE_ID "LL-H-S3-0001"//board ID
+#define LL_COLLAR_ID "LL-C-C5-0001"
 
 typedef enum {
     LL_MOTION_IDLE = 0,// 静止
@@ -109,4 +110,3 @@ typedef struct {
 #ifdef __cplusplus
 }
 #endif
-

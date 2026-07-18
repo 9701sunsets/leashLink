@@ -2,25 +2,17 @@
 
 #include "board_pins.h"
 #include "driver/gpio.h"
-#include "esp_adc/adc_oneshot.h"
 #include "esp_log.h"
+#include "power.h"
 
 static const char *TAG = "light_sensor";
-static adc_oneshot_unit_handle_t s_adc;
+static bool s_initialized;
 
 esp_err_t light_sensor_init(void)
 {
-    if (!s_adc) {
-        adc_oneshot_unit_init_cfg_t init_cfg = {
-            .unit_id = ADC_UNIT_1,
-        };
-        ESP_ERROR_CHECK(adc_oneshot_new_unit(&init_cfg, &s_adc));
-
-        adc_oneshot_chan_cfg_t chan_cfg = {
-            .atten = ADC_ATTEN_DB_12,
-            .bitwidth = ADC_BITWIDTH_DEFAULT,
-        };
-        ESP_ERROR_CHECK(adc_oneshot_config_channel(s_adc, HANDLE_LIGHT_ADC_CHANNEL, &chan_cfg));
+    if (!s_initialized) {
+        ESP_ERROR_CHECK(power_init());
+        s_initialized = true;
     }
 
     gpio_config_t do_cfg = {
@@ -39,12 +31,12 @@ esp_err_t light_sensor_init(void)
 
 esp_err_t light_sensor_read(ll_light_sample_t *out)
 {
-    if (!out || !s_adc) {
+    if (!out || !s_initialized) {
         return ESP_ERR_INVALID_STATE;
     }
 
     int raw = 0;
-    ESP_ERROR_CHECK(adc_oneshot_read(s_adc, HANDLE_LIGHT_ADC_CHANNEL, &raw));
+    ESP_ERROR_CHECK(power_read_light_raw(&raw));
 
     out->raw = raw;
     out->lux_est = raw / 4;

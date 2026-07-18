@@ -4,6 +4,7 @@
 
 #include "esp_event.h"
 #include "esp_log.h"
+#include "esp_mac.h"
 #include "esp_now.h"
 #include "esp_timer.h"
 #include "esp_wifi.h"
@@ -48,6 +49,12 @@ typedef struct __attribute__((packed)) {
     int16_t param_b;// 参数B
 } ll_control_payload_t;
 
+typedef struct __attribute__((packed)) {
+    uint16_t ack_seq;
+    uint8_t status;
+    uint8_t detail;
+} ll_ack_payload_t;
+
 /**
  * 最新的项圈遥测数据
  */
@@ -91,8 +98,7 @@ static uint16_t crc16_ccitt(const uint8_t *data, size_t len)
  */
 static void on_recv(const esp_now_recv_info_t *info, const uint8_t *data, int len)
 {
-    (void)info;
-    if (!data || len < (int)(sizeof(ll_frame_header_t) + 2)) {
+    if (!info || !data || len < (int)(sizeof(ll_frame_header_t) + 2)) {
         return;
     }
 
@@ -120,12 +126,26 @@ static void on_recv(const esp_now_recv_info_t *info, const uint8_t *data, int le
         s_collar.steps = p.steps;
         s_collar.accel_peak_g = (float)p.accel_peak_mg / 1000.0f;
         s_collar.confidence_pct = p.confidence_pct;
-        s_collar.rssi_dbm = p.rssi_dbm;
+        s_collar.rssi_dbm = info->rx_ctrl ? info->rx_ctrl->rssi : p.rssi_dbm;
         s_collar.battery_pct = p.battery_pct;
         s_collar.ts_ms = esp_timer_get_time() / 1000;
         s_last_rx_ms = s_collar.ts_ms;
+        ESP_LOGI(TAG, "collar telemetry seq=%u rssi=%d motion=%u steps=%lu battery=%u",
+                 h->seq,
+                 s_collar.rssi_dbm,
+                 s_collar.motion_state,
+                 (unsigned long)s_collar.steps,
+                 s_collar.battery_pct);
     } else if (h->msg_type == LL_MSG_HEARTBEAT) {
         s_last_rx_ms = esp_timer_get_time() / 1000;
+        ESP_LOGI(TAG, "heartbeat seq=%u from " MACSTR, h->seq, MAC2STR(info->src_addr));
+    } else if (h->msg_type == LL_MSG_CONTROL_ACK && h->payload_len >= sizeof(ll_ack_payload_t)) {
+        ll_ack_payload_t ack;
+        memcpy(&ack, payload, sizeof(ack));
+        ESP_LOGI(TAG, "control ack ack_seq=%u status=%u detail=%u",
+                 ack.ack_seq, ack.status, ack.detail);
+    } else if (h->msg_type == LL_MSG_PAIR_ACK) {
+        ESP_LOGI(TAG, "pair ack seq=%u from " MACSTR, h->seq, MAC2STR(info->src_addr));
     }
 }
 
@@ -195,6 +215,7 @@ esp_err_t espnow_handle_send_feedback(uint8_t cmd_type, uint16_t duration_ms)
     uint16_t crc = crc16_ccitt(frame, sizeof(frame) - 2);
     frame[sizeof(frame) - 2] = crc & 0xFF;
     frame[sizeof(frame) - 1] = crc >> 8;
+    ESP_LOGI(TAG, "send control seq=%u cmd=%u duration=%u",
+             h->seq, payload.cmd_type, payload.duration_ms);
     return esp_now_send(s_broadcast_peer, frame, sizeof(frame));
 }
-
