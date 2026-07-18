@@ -46,7 +46,7 @@ void app_main(void)
     init_wifi_from_saved_credentials();
 
     ESP_ERROR_CHECK(power_service_init());
-    ESP_ERROR_CHECK(imu_init());
+    ESP_LOGI(TAG, "IMU init deferred to task_imu");
     ESP_ERROR_CHECK(led_init());
 #if CONFIG_COLLAR_ENABLE_LEGACY_BUZZER
     ESP_ERROR_CHECK(buzzer_init());

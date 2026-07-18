@@ -2,6 +2,7 @@ idf_component_register(
     SRCS
         "app_main.c"
         "drivers/imu_driver.c"
+        "drivers/bmi270_espp_bridge.cpp"
         "drivers/led_driver.c"
         "drivers/buzzer_driver.c"
         "drivers/speaker_driver.c"
@@ -26,6 +27,7 @@ idf_component_register(
         esp_adc
         esp_driver_gpio
         esp_driver_i2c
+        esp_driver_spi
         esp_event
         esp_netif
         esp_timer
