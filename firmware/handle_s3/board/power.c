@@ -35,6 +35,11 @@ esp_err_t power_init(void)
     };
     ESP_ERROR_CHECK(adc_oneshot_config_channel(s_adc, HANDLE_LIGHT_ADC_CHANNEL, &chan_cfg));
     ESP_ERROR_CHECK(adc_oneshot_config_channel(s_adc, HANDLE_BAT_ADC_CHANNEL, &chan_cfg));
+    ESP_LOGI(TAG, "ready: light AO=GPIO%d ADC1_CH%d battery sense=GPIO%d ADC1_CH%d",
+             HANDLE_LIGHT_AO_GPIO,
+             HANDLE_LIGHT_ADC_CHANNEL,
+             HANDLE_BAT_ADC_GPIO,
+             HANDLE_BAT_ADC_CHANNEL);
     s_initialized = true;
     return ESP_OK;
 }

@@ -21,15 +21,16 @@ void task_sensor_board(void *arg)
         heart_sensor_read_raw(&heart_raw);
 
         if (light_sensor_read(&light) == ESP_OK) {
-            ESP_LOGI(TAG, "light raw=%d lux_est=%d DO_dark=%d heart_present=%d addr=0x%02x INT=%d ir=%u red=%u buttons=%d/%d/%d",
+            ESP_LOGI(TAG, "light raw=%d lux_est=%d DO_dark=%d heart_present=%d addr=0x%02x part=0x%02x INT=%d ir=%lu red=%lu buttons=%d/%d/%d",
                      light.raw,
                      light.lux_est,
                      light.digital_dark,
                      heart.present,
                      heart.i2c_addr,
+                     heart.part_id,
                      heart.int_level,
-                     heart_raw.ir,
-                     heart_raw.red,
+                     (unsigned long)heart_raw.ir,
+                     (unsigned long)heart_raw.red,
                      buttons.button1_pressed,
                      buttons.button2_pressed,
                      buttons.button3_pressed);
