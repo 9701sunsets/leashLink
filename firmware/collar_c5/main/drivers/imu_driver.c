@@ -99,6 +99,18 @@ static esp_err_t bmi270_spi_write(uint8_t reg, uint8_t value)
     return spi_device_transmit(s_bmi_spi, &trans);
 }
 
+static void bmi270_spi_release_device(void)
+{
+    if (s_bmi_spi) {
+        spi_bus_remove_device(s_bmi_spi);
+        s_bmi_spi = NULL;
+    }
+    if (s_spi_bus_ready) {
+        spi_bus_free(SPI2_HOST);
+        s_spi_bus_ready = false;
+    }
+}
+
 static bool imu_probe_known_devices(void)
 {
     s_status.bmi270_present = false;
@@ -110,44 +122,67 @@ static bool imu_probe_known_devices(void)
     s_status.bmm350_chip_id = 0;
     s_status.config_loaded = false;
 
-    if (collar_bmi270_espp_init() == ESP_OK) {
-        s_status.bmi270_present = true;
-        s_status.bmi270_spi = true;
-        s_status.bmi270_chip_id = 0x24;
-        s_status.config_loaded = collar_bmi270_espp_is_ready();
-        return true;
-    }
-
-    uint8_t chip = 0;
-    if (bmi270_spi_read(BMI270_CHIP_ID_REG, &chip, 1) == ESP_OK && chip == 0x24) {
-        s_status.bmi270_present = true;
-        s_status.bmi270_spi = true;
-        s_status.bmi270_chip_id = chip;
-        return true;
-    }
-
     if (collar_i2c_bus_init() != ESP_OK) {
-        ESP_LOGW(TAG, "I2C init failed after SPI probe");
-        return false;
+        ESP_LOGW(TAG, "I2C init failed");
+        return s_status.bmi270_present;
     }
     for (size_t i = 0; i < sizeof(k_bmi270_addrs); ++i) {
         uint8_t addr = k_bmi270_addrs[i];
-        if (collar_i2c_probe(addr) == ESP_OK &&
-            collar_i2c_read_byte(addr, BMI270_CHIP_ID_REG, &s_status.bmi270_chip_id) == ESP_OK) {
+        uint8_t chip = 0;
+        esp_err_t probe_err = collar_i2c_probe(addr);
+        esp_err_t read_err = probe_err == ESP_OK ?
+            collar_i2c_read_byte(addr, BMI270_CHIP_ID_REG, &chip) : probe_err;
+        ESP_LOGI(TAG, "I2C BMI270 probe addr=0x%02x probe=%s read=%s chip=0x%02x",
+                 addr,
+                 esp_err_to_name(probe_err),
+                 esp_err_to_name(read_err),
+                 chip);
+        if (read_err == ESP_OK && chip == 0x24) {
             s_status.bmi270_present = true;
+            s_status.bmi270_spi = false;
             s_status.bmi270_addr = addr;
+            s_status.bmi270_chip_id = chip;
             break;
         }
     }
 
     for (size_t i = 0; i < sizeof(k_bmm350_addrs); ++i) {
         uint8_t addr = k_bmm350_addrs[i];
-        if (collar_i2c_probe(addr) == ESP_OK &&
-            collar_i2c_read_byte(addr, BMM350_CHIP_ID_REG, &s_status.bmm350_chip_id) == ESP_OK) {
+        uint8_t chip = 0;
+        esp_err_t probe_err = collar_i2c_probe(addr);
+        esp_err_t read_err = probe_err == ESP_OK ?
+            collar_i2c_read_byte(addr, BMM350_CHIP_ID_REG, &chip) : probe_err;
+        ESP_LOGI(TAG, "I2C BMM350 probe addr=0x%02x probe=%s read=%s chip=0x%02x",
+                 addr,
+                 esp_err_to_name(probe_err),
+                 esp_err_to_name(read_err),
+                 chip);
+        if (read_err == ESP_OK && chip != 0x00 && chip != 0xff) {
             s_status.bmm350_present = true;
             s_status.bmm350_addr = addr;
+            s_status.bmm350_chip_id = chip;
             break;
         }
+    }
+
+    if (s_status.bmi270_present) {
+        esp_err_t bmi270_init_err = collar_bmi270_espp_init_i2c(s_status.bmi270_addr);
+        s_status.config_loaded = bmi270_init_err == ESP_OK && collar_bmi270_espp_is_ready();
+        if (!s_status.config_loaded) {
+            ESP_LOGW(TAG, "BMI270 I2C espp init failed: %s", esp_err_to_name(bmi270_init_err));
+        }
+        return true;
+    }
+
+    uint8_t chip = 0;
+    collar_i2c_bus_deinit();
+    if (bmi270_spi_read(BMI270_CHIP_ID_REG, &chip, 1) == ESP_OK && chip == 0x24) {
+        ESP_LOGI(TAG, "SPI BMI270 probe chip=0x%02x", chip);
+        s_status.bmi270_present = true;
+        s_status.bmi270_spi = true;
+        s_status.bmi270_chip_id = chip;
+        bmi270_spi_release_device();
+        return true;
     }
 
     return s_status.bmi270_present || s_status.bmm350_present;
@@ -172,31 +207,28 @@ static void imu_log_i2c_scan(void)
     }
 }
 
-static void imu_set_shuttle_mode(uint8_t g1, uint8_t g2, uint8_t sdo)
+static void imu_set_shuttle_mode(uint8_t g1, uint8_t g2)
 {
     gpio_set_level(COLLAR_BM_CS_GPIO, 1);
     gpio_set_level(COLLAR_BM_G1_GPIO, g1);
     gpio_set_level(COLLAR_BM_G2_GPIO, g2);
-    gpio_set_level(COLLAR_BM_SDO_GPIO, sdo);
     s_status.shuttle_g1_level = g1;
     s_status.shuttle_g2_level = g2;
-    s_status.shuttle_sdo_level = sdo;
+    s_status.shuttle_sdo_level = 0;
     vTaskDelay(pdMS_TO_TICKS(20));
 }
 
 static bool imu_find_working_shuttle_mode(void)
 {
-    for (uint8_t sdo = 0; sdo <= 1; ++sdo) {
-        for (uint8_t g1 = 0; g1 <= 1; ++g1) {
-            for (uint8_t g2 = 0; g2 <= 1; ++g2) {
-                imu_set_shuttle_mode(g1, g2, sdo);
-                ESP_LOGI(TAG, "probe shuttle mode G1=%u G2=%u SDO=%u CS=1",
-                         g1, g2, sdo);
-                if (imu_probe_known_devices()) {
-                    ESP_LOGI(TAG, "selected shuttle mode G1=%u G2=%u SDO=%u",
-                             g1, g2, sdo);
-                    return true;
-                }
+    for (uint8_t g1 = 0; g1 <= 1; ++g1) {
+        for (uint8_t g2 = 0; g2 <= 1; ++g2) {
+            imu_set_shuttle_mode(g1, g2);
+            ESP_LOGI(TAG, "probe shuttle mode G1=%u G2=%u CS=1 SDO=MISO",
+                     g1, g2);
+            if (imu_probe_known_devices()) {
+                ESP_LOGI(TAG, "selected shuttle mode G1=%u G2=%u",
+                         g1, g2);
+                return true;
             }
         }
     }
@@ -229,10 +261,10 @@ static void bmi270_configure_basic_accel(void)
     }
     if (s_status.bmi270_spi) {
         if (!s_status.config_loaded) {
-            esp_err_t init_err = collar_bmi270_espp_init();
+            esp_err_t init_err = collar_bmi270_espp_init_spi();
             s_status.config_loaded = init_err == ESP_OK && collar_bmi270_espp_is_ready();
             if (!s_status.config_loaded) {
-                ESP_LOGW(TAG, "BMI270 espp init failed: %s", esp_err_to_name(init_err));
+                ESP_LOGW(TAG, "BMI270 SPI espp init failed: %s", esp_err_to_name(init_err));
             }
         }
         ESP_LOGI(TAG, "BMI270 espp init cfg=%d chip=0x%02x range=4g odr=100hz G1=GPIO%d:%u G2=GPIO%d:%u CS=GPIO%d SDO=GPIO%d:%u",
@@ -274,15 +306,14 @@ esp_err_t imu_init(void)
     gpio_config_t shuttle_cfg = {
         .pin_bit_mask = (1ULL << COLLAR_BM_G1_GPIO) |
                         (1ULL << COLLAR_BM_G2_GPIO) |
-                        (1ULL << COLLAR_BM_CS_GPIO) |
-                        (1ULL << COLLAR_BM_SDO_GPIO),
+                        (1ULL << COLLAR_BM_CS_GPIO),
         .mode = GPIO_MODE_INPUT_OUTPUT,
         .pull_up_en = GPIO_PULLUP_DISABLE,
         .pull_down_en = GPIO_PULLDOWN_DISABLE,
         .intr_type = GPIO_INTR_DISABLE,
     };
     ESP_ERROR_CHECK(gpio_config(&shuttle_cfg));
-    imu_set_shuttle_mode(0, 0, 0);
+    imu_set_shuttle_mode(0, 0);
 
     if (!imu_probe_known_devices()) {
         imu_find_working_shuttle_mode();

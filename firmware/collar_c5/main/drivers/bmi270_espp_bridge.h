@@ -19,6 +19,8 @@ typedef struct {
 } collar_bmi270_accel_t;
 
 esp_err_t collar_bmi270_espp_init(void);
+esp_err_t collar_bmi270_espp_init_i2c(uint8_t addr);
+esp_err_t collar_bmi270_espp_init_spi(void);
 bool collar_bmi270_espp_is_ready(void);
 esp_err_t collar_bmi270_espp_read_accel(collar_bmi270_accel_t *out);
 

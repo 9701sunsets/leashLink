@@ -26,6 +26,18 @@ esp_err_t collar_i2c_bus_init(void)
     return ESP_OK;
 }
 
+esp_err_t collar_i2c_bus_deinit(void)
+{
+    if (!s_bus) {
+        return ESP_OK;
+    }
+    esp_err_t err = i2c_del_master_bus(s_bus);
+    if (err == ESP_OK) {
+        s_bus = NULL;
+    }
+    return err;
+}
+
 esp_err_t collar_i2c_probe(uint8_t addr)
 {
     ESP_RETURN_ON_ERROR(collar_i2c_bus_init(), TAG, "init failed");
@@ -64,6 +76,19 @@ esp_err_t collar_i2c_read_bytes(uint8_t addr, uint8_t reg, uint8_t *data, size_t
     i2c_master_dev_handle_t dev;
     ESP_RETURN_ON_ERROR(add_temp_device(addr, &dev), TAG, "add device failed");
     esp_err_t err = i2c_master_transmit_receive(dev, &reg, 1, data, len, 100);
+    i2c_master_bus_rm_device(dev);
+    return err;
+}
+
+esp_err_t collar_i2c_write_bytes(uint8_t addr, const uint8_t *data, size_t len)
+{
+    if (!data || len == 0) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    ESP_RETURN_ON_ERROR(collar_i2c_bus_init(), TAG, "init failed");
+    i2c_master_dev_handle_t dev;
+    ESP_RETURN_ON_ERROR(add_temp_device(addr, &dev), TAG, "add device failed");
+    esp_err_t err = i2c_master_transmit(dev, data, len, 100);
     i2c_master_bus_rm_device(dev);
     return err;
 }
