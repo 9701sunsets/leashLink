@@ -8,6 +8,7 @@
 #include "distance_service.h"
 #include "espnow_handle.h"
 #include "gps_driver.h"
+#include "heart_sensor.h"
 #include "light_sensor.h"
 #include "ll_mqtt_client.h"
 #include "session_service.h"
@@ -39,6 +40,9 @@ esp_err_t cloud_service_publish_telemetry(const ll_tension_sample_t *tension,
     ll_gps_fix_t gps = gps_get_latest();
     ll_light_sample_t light = {0};
     bool light_ok = light_sensor_read(&light) == ESP_OK;
+    ll_heart_sensor_status_t heart_status = heart_sensor_get_status();
+    ll_heart_raw_sample_t heart_raw = {0};
+    bool heart_ok = heart_sensor_read_raw(&heart_raw) == ESP_OK && heart_raw.valid;
     bool link_ok = espnow_handle_link_ok();
     float distance_est_m = collar ? distance_service_estimate_from_rssi(collar->rssi_dbm) : 999.0f;
     const char *alert = link_ok ? "none" : "link_lost";
@@ -47,7 +51,9 @@ esp_err_t cloud_service_publish_telemetry(const ll_tension_sample_t *tension,
              "{\"protocol_version\":1,\"pair_id\":\"%s\",\"session_id\":\"%s\",\"ts_ms\":%lld,"
              "\"handle\":{\"tension_n\":%.2f,\"tension_peak_n\":%.2f,\"tension_stable\":%s,"
              "\"leash_locked\":%s,\"ambient_light_lux\":%d,\"ambient_light_raw\":%d,\"dark\":%s,"
-             "\"battery_pct\":%d,\"gps\":{\"lat\":%.6f,\"lng\":%.6f,\"fix\":%s,\"accuracy_m\":%.1f}},"
+             "\"battery_pct\":%d,"
+             "\"heart\":{\"present\":%s,\"ok\":%s,\"ir\":%lu,\"red\":%lu,\"i2c_addr\":%u,\"part_id\":%u,\"int_level\":%d},"
+             "\"gps\":{\"lat\":%.6f,\"lng\":%.6f,\"fix\":%s,\"accuracy_m\":%.1f}},"
              "\"collar\":{\"motion_state\":%d,\"steps\":%lu,\"accel_peak_g\":%.3f,"
              "\"confidence_pct\":%u,\"battery_pct\":%u,\"rssi_dbm\":%d,\"temp_c_x10\":%d,\"distance_est_m\":%.2f},"
              "\"location\":{\"lat\":%.6f,\"lng\":%.6f,\"fix\":%s,\"accuracy_m\":%.1f},"
@@ -63,6 +69,13 @@ esp_err_t cloud_service_publish_telemetry(const ll_tension_sample_t *tension,
              light_ok ? light.raw : 0,
              light_ok && light.digital_dark ? "true" : "false",
              battery_pct,
+             heart_status.present ? "true" : "false",
+             heart_ok ? "true" : "false",
+             (unsigned long)heart_raw.ir,
+             (unsigned long)heart_raw.red,
+             heart_status.i2c_addr,
+             heart_status.part_id,
+             heart_status.int_level,
              gps.lat,
              gps.lng,
              gps.fix ? "true" : "false",

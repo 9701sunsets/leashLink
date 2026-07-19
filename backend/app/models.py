@@ -35,6 +35,16 @@ class GPSLocation(BaseModel):
     fix: bool = True
     accuracy_m: Optional[float] = None
 
+
+class HeartSensorStatus(BaseModel):
+    present: bool = False
+    ok: bool = False
+    ir: Optional[int] = None
+    red: Optional[int] = None
+    i2c_addr: Optional[int] = None
+    part_id: Optional[int] = None
+    int_level: Optional[int] = None
+
 # 设备状态响应模型
 class HandleStatus(BaseModel):
     battery_pct: int = 0
@@ -45,6 +55,7 @@ class HandleStatus(BaseModel):
     ambient_light_lux: Optional[float] = None
     ambient_light_raw: Optional[int] = None
     dark: Optional[bool] = None
+    heart: HeartSensorStatus = Field(default_factory=HeartSensorStatus)
     gps: Optional[GPSLocation] = None
 
 # 设备状态响应模型
@@ -67,6 +78,50 @@ class DeviceStatusResponse(BaseModel):
     collar: CollarStatus
     active_alert: str = "none"
 
+
+class DogProfile(BaseModel):
+    id: int
+    pair_id: str
+    name: str
+    owner: str = ""
+    breed: str = "mixed"
+    age: float = 2
+    weight: float = 10
+    neutered: bool = False
+    calories_now: int = 0
+    walk_minutes: int = 0
+    distance_km: float = 0.0
+    created_at: int = Field(default_factory=utc_now_ms)
+    updated_at: int = Field(default_factory=utc_now_ms)
+
+
+class DogProfileCreateRequest(BaseModel):
+    name: str
+    owner: str = ""
+    breed: str = "mixed"
+    age: float = 2
+    weight: float = 10
+    neutered: bool = False
+    calories_now: int = 0
+    walk_minutes: int = 0
+    distance_km: float = 0.0
+
+
+class DogProfileUpdateRequest(BaseModel):
+    name: Optional[str] = None
+    owner: Optional[str] = None
+    breed: Optional[str] = None
+    age: Optional[float] = None
+    weight: Optional[float] = None
+    neutered: Optional[bool] = None
+    calories_now: Optional[int] = None
+    walk_minutes: Optional[int] = None
+    distance_km: Optional[float] = None
+
+
+class DogProfileListResponse(BaseModel):
+    items: list[DogProfile]
+
 # 设备遥测数据模型
 class HandleTelemetryInput(BaseModel):
     tension_n: Optional[float] = None
@@ -77,6 +132,7 @@ class HandleTelemetryInput(BaseModel):
     ambient_light_lux: Optional[float] = None
     ambient_light_raw: Optional[int] = None
     dark: Optional[bool] = None
+    heart: Optional[HeartSensorStatus] = None
     battery_pct: Optional[int] = None
     gps: Optional[GPSLocation] = None
 

@@ -5,6 +5,9 @@ from app.models import (
     DeviceRegisterRequest,
     DeviceRegisterResponse,
     DeviceStatusResponse,
+    DogProfile,
+    DogProfileCreateRequest,
+    DogProfileUpdateRequest,
     StoredTelemetry,
     TelemetryUpsertRequest,
 )
@@ -35,3 +38,19 @@ def upsert_telemetry(payload: TelemetryUpsertRequest) -> StoredTelemetry:
 # 设备会话ID确保服务模块
 def ensure_session_id(session_id: str | None = None) -> str:
     return session_id or build_session_id()
+
+
+def list_dog_profiles(pair_id: str) -> list[DogProfile]:
+    return repository.list_dog_profiles(pair_id)
+
+
+def create_dog_profile(pair_id: str, payload: DogProfileCreateRequest) -> DogProfile:
+    return repository.create_dog_profile(pair_id, payload)
+
+
+def update_dog_profile(pair_id: str, dog_id: int, payload: DogProfileUpdateRequest) -> DogProfile:
+    return repository.update_dog_profile(pair_id, dog_id, payload)
+
+
+def delete_dog_profile(pair_id: str, dog_id: int) -> None:
+    repository.delete_dog_profile(pair_id, dog_id)

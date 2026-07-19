@@ -229,6 +229,108 @@ GET http://127.0.0.1:8000/api/v1/devices/LL-P-0001/status
 
 如果后端不可用，网页保留本地模拟数据，不阻断页面预览。
 
+### 4.2 狗狗档案列表
+
+狗狗档案按设备配对 `pair_id` 归属，网页启动时读取：
+
+```http
+GET /api/v1/devices/{pair_id}/dogs
+```
+
+响应：
+
+```json
+{
+  "items": [
+    {
+      "id": 1,
+      "pair_id": "LL-P-0001",
+      "name": "Luna",
+      "owner": "小林",
+      "breed": "golden",
+      "age": 3,
+      "weight": 30,
+      "neutered": false,
+      "calories_now": 128,
+      "walk_minutes": 45,
+      "distance_km": 3.2,
+      "created_at": 1783334400000,
+      "updated_at": 1783334400000
+    }
+  ]
+}
+```
+
+### 4.3 新增狗狗档案
+
+```http
+POST /api/v1/devices/{pair_id}/dogs
+Content-Type: application/json
+```
+
+请求：
+
+```json
+{
+  "name": "Momo",
+  "owner": "小林",
+  "breed": "poodle",
+  "age": 5,
+  "weight": 5,
+  "neutered": true,
+  "calories_now": 64,
+  "walk_minutes": 28,
+  "distance_km": 1.4
+}
+```
+
+### 4.4 更新狗狗档案
+
+```http
+PUT /api/v1/devices/{pair_id}/dogs/{dog_id}
+Content-Type: application/json
+```
+
+请求字段均为可选，网页编辑档案时会自动保存：
+
+```json
+{
+  "name": "Luna",
+  "breed": "golden",
+  "age": 3,
+  "weight": 30,
+  "neutered": false
+}
+```
+
+### 4.5 删除狗狗档案
+
+```http
+DELETE /api/v1/devices/{pair_id}/dogs/{dog_id}
+```
+
+响应：
+
+```json
+{
+  "deleted": true
+}
+```
+
+### 4.6 网页实时指标对齐规则
+
+| 网页展示 | 后端字段 | 对齐说明 |
+| --- | --- | --- |
+| 设备在线 | `online` | 由后端收到 telemetry 后置为 `true` |
+| 安全距离 | `collar.distance_est_m` | 由 S3 根据 C5 RSSI 估距后上传 |
+| 光照度 | `handle.ambient_light_lux` / `handle.ambient_light_raw` / `handle.dark` | 来自 S3 光敏传感器 |
+| 速度 | `collar.motion_state` + `collar.accel_peak_g` | 网页端估算速度；后续可用 GPS 轨迹差分替换 |
+| 心率监测 | `handle.heart.ok` / `handle.heart.ir` / `handle.heart.red` | 当前上传 MAX30102 原始信号，网页显示 IR 状态并估算演示 bpm |
+| 运动时长 | `collar.steps` | 当前按步数粗略推导；后续建议后端维护 session 时长 |
+| 消耗 | 狗狗体重/品种 + 估算速度 + 运动时长 | 网页端计算 |
+| 散步距离 | `collar.distance_est_m` / `handle.gps` | 当前网页以实时人狗距离更新最小展示；后续接 GPS 轨迹累计 |
+| GPS | `handle.gps` / `location` | 已进入后端状态；网页地图真实定位尚可继续增强 |
+
 ## 5. 网页本地服务接口
 
 `server.mjs` 提供静态文件服务和健康助手代理接口。

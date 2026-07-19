@@ -131,6 +131,10 @@ static void init_full_handle(void)
     ESP_ERROR_CHECK(buzzer_init());
     ESP_ERROR_CHECK(button_driver_init());
     ESP_ERROR_CHECK(light_sensor_init());
+    esp_err_t heart_err = heart_sensor_init();
+    if (heart_err != ESP_OK) {
+        ESP_LOGW(TAG, "heart sensor init failed: %s", esp_err_to_name(heart_err));
+    }
     ESP_ERROR_CHECK(motor_init());
     ESP_ERROR_CHECK(leash_control_init());
     ESP_ERROR_CHECK(tension_service_init());

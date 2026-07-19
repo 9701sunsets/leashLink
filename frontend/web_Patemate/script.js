@@ -24,6 +24,12 @@ const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 const BACKEND_API_BASE = "http://127.0.0.1:8000/api/v1";
 const LIVE_PAIR_ID = "LL-P-0001";
+let profileSyncTimer = null;
+
+function isEditingDogProfile() {
+  const active = document.activeElement;
+  return Boolean(active && active.closest && active.closest(".dog-profile-card"));
+}
 
 const walkRecords = [
   ["今天", "45 min", "3.2 km", "128 kcal", "达成 60%"],
@@ -47,6 +53,35 @@ const poopRecords = [
 
 function activeDog() {
   return dogs.find((dog) => dog.id === activeDogId) || dogs[0];
+}
+
+function fromApiDog(dog) {
+  return {
+    id: dog.id,
+    name: dog.name,
+    owner: dog.owner || "主人",
+    breed: dog.breed || "mixed",
+    age: Number(dog.age || 2),
+    weight: Number(dog.weight || 10),
+    neutered: Boolean(dog.neutered),
+    caloriesNow: Number(dog.calories_now || 0),
+    walkMinutes: Number(dog.walk_minutes || 0),
+    distanceKm: Number(dog.distance_km || 0),
+  };
+}
+
+function toApiDog(dog) {
+  return {
+    name: dog.name,
+    owner: dog.owner,
+    breed: dog.breed,
+    age: Number(dog.age || 0),
+    weight: Number(dog.weight || 0),
+    neutered: Boolean(dog.neutered),
+    calories_now: Number(dog.caloriesNow || 0),
+    walk_minutes: Number(dog.walkMinutes || 0),
+    distance_km: Number(dog.distanceKm || 0),
+  };
 }
 
 function clamp(value, min, max) {
@@ -124,12 +159,44 @@ function renderDogProfiles() {
   $$("[data-delete-dog]").forEach((button) => button.addEventListener("click", () => deleteDog(Number(button.dataset.deleteDog))));
   $$(".dog-profile-card [data-field]").forEach((field) => {
     field.addEventListener("input", () => updateDogField(Number(field.closest(".dog-profile-card").dataset.dogId), field));
+    field.addEventListener("change", () => renderAll());
   });
 }
 
 function selectDog(id) {
   activeDogId = id;
   renderAll();
+}
+
+async function loadDogProfiles() {
+  try {
+    const response = await fetch(`${BACKEND_API_BASE}/devices/${LIVE_PAIR_ID}/dogs`, { cache: "no-store" });
+    if (!response.ok) return;
+    const data = await response.json();
+    if (!Array.isArray(data.items) || data.items.length === 0) return;
+    dogs = data.items.map(fromApiDog);
+    activeDogId = dogs[0].id;
+    renderAll();
+  } catch {
+    // Keep local prototype profiles when backend is not running.
+  }
+}
+
+function scheduleDogProfileSave(dog) {
+  clearTimeout(profileSyncTimer);
+  profileSyncTimer = setTimeout(() => saveDogProfile(dog), 300);
+}
+
+async function saveDogProfile(dog) {
+  try {
+    await fetch(`${BACKEND_API_BASE}/devices/${LIVE_PAIR_ID}/dogs/${dog.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(toApiDog(dog)),
+    });
+  } catch {
+    // Local edits remain visible even if backend persistence is unavailable.
+  }
 }
 
 function updateDogField(id, field) {
@@ -140,7 +207,8 @@ function updateDogField(id, field) {
   else if (key === "age" || key === "weight") dog[key] = Number(field.value || 0);
   else dog[key] = field.value.trim() || (key === "name" ? "新朋友" : "主人");
   activeDogId = id;
-  renderAll();
+  renderDogInfo();
+  scheduleDogProfileSave(dog);
 }
 
 function renderDogInfo() {
@@ -266,9 +334,67 @@ async function refreshBackendStatus() {
   try {
     const response = await fetch(`${BACKEND_API_BASE}/devices/${LIVE_PAIR_ID}/status`, { cache: "no-store" });
     if (!response.ok) return;
-    applyBackendStatus(await response.json());
+    applyBackendStatusAligned(await response.json());
   } catch {
     // Keep the local prototype data when the backend is not running.
+  }
+}
+
+function estimateSpeedFromTelemetry(status) {
+  const accel = Number(status?.collar?.accel_peak_g || 0);
+  const motion = status?.collar?.motion_state;
+  if (motion === "run") return clamp(5.5 + accel * 1.8, 5.5, 9.5);
+  if (motion === "walk") return clamp(2.5 + accel * 1.2, 2.5, 5.5);
+  if (motion === "burst") return clamp(7.5 + accel * 2.2, 7.5, 12);
+  return 0;
+}
+
+function estimateHeartFromRaw(heart) {
+  if (!heart || !heart.ok || !heart.ir) return null;
+  return clamp(82 + Number(heart.ir % 48), 82, 150);
+}
+
+function applyBackendStatusAligned(status) {
+  if (!status || !status.handle || !status.collar) return;
+
+  const dog = activeDog();
+  const tension = Number(status.handle.tension_n || 0);
+  const distance = Number(status.collar.distance_est_m || 0);
+  const speed = estimateSpeedFromTelemetry(status);
+  const heart = estimateHeartFromRaw(status.handle.heart);
+  const temp = status.collar.temp_c_x10 == null ? null : Number(status.collar.temp_c_x10) / 10;
+  const light = status.handle.ambient_light_lux;
+  const riskyTension = tension >= 20 || status.handle.leash_locked;
+
+  dog.walkMinutes = Math.max(dog.walkMinutes, Math.round(Number(status.collar.steps || 0) / 100));
+  dog.distanceKm = Math.max(dog.distanceKm, Number((distance / 1000).toFixed(2)));
+  dog.caloriesNow = Math.max(dog.caloriesNow, Math.round(dog.walkMinutes * estimateMinuteCalories(speed || 2.5)));
+
+  renderAll();
+
+  $("#speedNow").textContent = speed.toFixed(1);
+  $("#heartRateNow").textContent = heart == null ? "--" : heart;
+  $("#tempNow").textContent = temp == null ? $("#tempNow").textContent : temp.toFixed(1);
+  $("#distanceNow").textContent = distance.toFixed(1);
+  $("#tensionNow").textContent = tension.toFixed(1);
+  $("#avgHeart").textContent = heart == null ? "--" : heart;
+  $("#paceLabel").textContent = motionText(status.collar.motion_state);
+  $("#heartLabel").textContent = status.handle.heart?.ok ? `IR ${status.handle.heart.ir}` : "未接触";
+  $("#tempLabel").textContent = temp != null && temp > 39.2 ? "偏高" : "正常";
+  $("#distanceLabel").textContent = distance > 10 ? "偏远" : "安全";
+  $("#fenceNow").textContent = `${distance.toFixed(1)} m`;
+  $("#fenceHint").textContent = distance > 10 ? "接近边界" : "安全";
+  $("#tensionHint").textContent = riskyTension ? "偏紧" : "正常";
+  $("#lockState").textContent = status.handle.leash_locked ? "已锁定" : "未锁定";
+
+  updateHealthPill(heart || 0, Number($("#tempNow").textContent), distance, riskyTension);
+  drawHeartLine(heart || 100);
+  drawSpeedLine(speed);
+
+  if (light != null) {
+    $("#careTip").textContent = status.handle.dark
+      ? `环境偏暗，光照 ${light} lux，原始值 ${status.handle.ambient_light_raw ?? "--"}`
+      : `光照 ${light} lux，原始值 ${status.handle.ambient_light_raw ?? "--"}`;
   }
 }
 
@@ -329,16 +455,34 @@ function renderRecords() {
     .join("");
 }
 
-function addDog() {
+async function addDog() {
   const nextId = Math.max(...dogs.map((dog) => dog.id)) + 1;
-  dogs.push({ id: nextId, name: `新朋友 ${dogs.length + 1}`, owner: activeDog().owner, breed: "corgi", age: 2, weight: 11, neutered: false, caloriesNow: 0, walkMinutes: 0, distanceKm: 0 });
-  activeDogId = nextId;
+  const draft = { id: nextId, name: `新朋友 ${dogs.length + 1}`, owner: activeDog().owner, breed: "corgi", age: 2, weight: 11, neutered: false, caloriesNow: 0, walkMinutes: 0, distanceKm: 0 };
+  try {
+    const response = await fetch(`${BACKEND_API_BASE}/devices/${LIVE_PAIR_ID}/dogs`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(toApiDog(draft)),
+    });
+    if (!response.ok) throw new Error("create dog failed");
+    const created = fromApiDog(await response.json());
+    dogs.push(created);
+    activeDogId = created.id;
+  } catch {
+    dogs.push(draft);
+    activeDogId = draft.id;
+  }
   renderAll();
   setView("profile");
 }
 
-function deleteDog(id) {
+async function deleteDog(id) {
   if (dogs.length <= 1) return;
+  try {
+    await fetch(`${BACKEND_API_BASE}/devices/${LIVE_PAIR_ID}/dogs/${id}`, { method: "DELETE" });
+  } catch {
+    // Keep local delete behavior when backend is unavailable.
+  }
   dogs = dogs.filter((dog) => dog.id !== id);
   if (activeDogId === id) activeDogId = dogs[0].id;
   renderAll();
@@ -346,7 +490,9 @@ function deleteDog(id) {
 
 function renderAll() {
   renderDogInfo();
-  renderDogProfiles();
+  if (!isEditingDogProfile()) {
+    renderDogProfiles();
+  }
   renderRecords();
 }
 
@@ -449,5 +595,6 @@ bindEvents();
 renderAll();
 updateVitals(false);
 checkAssistantStatus();
+loadDogProfiles();
 refreshBackendStatus();
 setInterval(refreshBackendStatus, 1000);

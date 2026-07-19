@@ -72,6 +72,9 @@ def handle_mqtt_message(topic: str, payload: dict[str, Any]) -> None:
         telemetry_payload["pair_id"] = pair_id
         telemetry_payload.setdefault("session_id", "mqtt-session")
         telemetry_payload.setdefault("ts_ms", utc_now_ms())
+        if int(telemetry_payload.get("ts_ms") or 0) < 1_000_000_000_000:
+            telemetry_payload["device_uptime_ms"] = telemetry_payload.get("ts_ms")
+            telemetry_payload["ts_ms"] = utc_now_ms()
         telemetry_payload.setdefault("handle", {})
         telemetry_payload.setdefault("collar", {})
         telemetry_payload.setdefault("alert", "none")

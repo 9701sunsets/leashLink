@@ -10,12 +10,16 @@ from app.models import (
     DeviceConfigRequest,
     DeviceRecord,
     DeviceStatusResponse,
+    DogProfile,
+    DogProfileCreateRequest,
+    DogProfileUpdateRequest,
     EventListResponse,
     EventSummary,
     FenceConfigRequest,
     HandleStatus,
     StoredEvent,
     StoredTelemetry,
+    utc_now_ms,
 )
 
 
@@ -34,6 +38,8 @@ class InMemoryRepository:
         self._sequence = 0
         self._devices: dict[str, DeviceRecord] = {}
         self._runtime: dict[str, DeviceRuntimeState] = {}
+        self._dog_sequence = 0
+        self._dogs_by_pair: dict[str, list[DogProfile]] = defaultdict(list)
         self._events_by_pair: dict[str, list[StoredEvent]] = defaultdict(list)
         self._sessions_by_pair: dict[str, set[str]] = defaultdict(set)
 
@@ -113,6 +119,8 @@ class InMemoryRepository:
                 runtime.status.handle.ambient_light_raw = telemetry.handle.ambient_light_raw
             if telemetry.handle.dark is not None:
                 runtime.status.handle.dark = telemetry.handle.dark
+            if telemetry.handle.heart is not None:
+                runtime.status.handle.heart = telemetry.handle.heart
             if telemetry.handle.gps is not None:
                 runtime.status.handle.gps = telemetry.handle.gps
             if telemetry.collar.battery_pct is not None:
@@ -132,6 +140,55 @@ class InMemoryRepository:
             if telemetry.collar.distance_est_m is not None:
                 runtime.status.collar.distance_est_m = telemetry.collar.distance_est_m
             return telemetry
+
+    def list_dog_profiles(self, pair_id: str) -> list[DogProfile]:
+        with self._lock:
+            dogs = self._dogs_by_pair[pair_id]
+            if not dogs:
+                self._dog_sequence += 1
+                dogs.append(
+                    DogProfile(
+                        id=self._dog_sequence,
+                        pair_id=pair_id,
+                        name="Luna",
+                        owner="小林",
+                        breed="golden",
+                        age=3,
+                        weight=30,
+                        neutered=False,
+                        calories_now=128,
+                        walk_minutes=45,
+                        distance_km=3.2,
+                    )
+                )
+            return list(dogs)
+
+    def create_dog_profile(self, pair_id: str, payload: DogProfileCreateRequest) -> DogProfile:
+        with self._lock:
+            self._dog_sequence += 1
+            dog = DogProfile(id=self._dog_sequence, pair_id=pair_id, **payload.model_dump())
+            self._dogs_by_pair[pair_id].append(dog)
+            return dog
+
+    def update_dog_profile(self, pair_id: str, dog_id: int, payload: DogProfileUpdateRequest) -> DogProfile:
+        with self._lock:
+            dogs = self._dogs_by_pair[pair_id]
+            for index, dog in enumerate(dogs):
+                if dog.id == dog_id:
+                    updates = payload.model_dump(exclude_unset=True)
+                    updates["updated_at"] = utc_now_ms()
+                    updated = dog.model_copy(update=updates)
+                    dogs[index] = updated
+                    return updated
+            raise KeyError(dog_id)
+
+    def delete_dog_profile(self, pair_id: str, dog_id: int) -> None:
+        with self._lock:
+            dogs = self._dogs_by_pair[pair_id]
+            remaining = [dog for dog in dogs if dog.id != dog_id]
+            if len(remaining) == len(dogs):
+                raise KeyError(dog_id)
+            self._dogs_by_pair[pair_id] = remaining
 
     # 设备状态查询服务模块
     def get_status(self, pair_id: str) -> Optional[DeviceStatusResponse]:
