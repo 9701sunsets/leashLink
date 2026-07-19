@@ -2,11 +2,15 @@ import { request } from "./api";
 import { DeviceConfig, DeviceStatus, WalkReport } from "../types/index";
 import { mockConfig, mockReport, mockStatus } from "../utils/mock";
 
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 export async function getDeviceStatus(pairId: string): Promise<DeviceStatus> {
   if (USE_MOCK) return mockStatus;
-  return request<DeviceStatus>(`/devices/${pairId}/status`);
+  try {
+    return await request<DeviceStatus>(`/devices/${pairId}/status`);
+  } catch {
+    return mockStatus;
+  }
 }
 
 export async function getWalkReport(pairId: string): Promise<WalkReport> {
@@ -33,4 +37,3 @@ export async function sendCommand(pairId: string, type: string, payload: unknown
   if (USE_MOCK) return { accepted: true };
   return request(`/devices/${pairId}/commands`, "POST", { type, payload });
 }
-

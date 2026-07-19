@@ -128,14 +128,18 @@ static void on_recv(const esp_now_recv_info_t *info, const uint8_t *data, int le
         s_collar.confidence_pct = p.confidence_pct;
         s_collar.rssi_dbm = info->rx_ctrl ? info->rx_ctrl->rssi : p.rssi_dbm;
         s_collar.battery_pct = p.battery_pct;
+        s_collar.temp_c_x10 = p.temp_c_x10;
         s_collar.ts_ms = esp_timer_get_time() / 1000;
         s_last_rx_ms = s_collar.ts_ms;
-        ESP_LOGI(TAG, "collar telemetry seq=%u rssi=%d motion=%u steps=%lu battery=%u",
+        ESP_LOGI(TAG, "collar telemetry seq=%u rssi=%d motion=%u steps=%lu accel=%.3fg conf=%u battery=%u temp_x10=%d",
                  h->seq,
                  s_collar.rssi_dbm,
                  s_collar.motion_state,
                  (unsigned long)s_collar.steps,
-                 s_collar.battery_pct);
+                 s_collar.accel_peak_g,
+                 s_collar.confidence_pct,
+                 s_collar.battery_pct,
+                 s_collar.temp_c_x10);
     } else if (h->msg_type == LL_MSG_HEARTBEAT) {
         s_last_rx_ms = esp_timer_get_time() / 1000;
         ESP_LOGI(TAG, "heartbeat seq=%u from " MACSTR, h->seq, MAC2STR(info->src_addr));

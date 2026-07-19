@@ -101,8 +101,18 @@ class InMemoryRepository:
                 runtime.status.handle.battery_pct = telemetry.handle.battery_pct
             if telemetry.handle.tension_n is not None:
                 runtime.status.handle.tension_n = telemetry.handle.tension_n
+            if telemetry.handle.tension_peak_n is not None:
+                runtime.status.handle.tension_peak_n = telemetry.handle.tension_peak_n
+            if telemetry.handle.tension_stable is not None:
+                runtime.status.handle.tension_stable = telemetry.handle.tension_stable
             if telemetry.handle.leash_locked is not None:
                 runtime.status.handle.leash_locked = telemetry.handle.leash_locked
+            if telemetry.handle.ambient_light_lux is not None:
+                runtime.status.handle.ambient_light_lux = telemetry.handle.ambient_light_lux
+            if telemetry.handle.ambient_light_raw is not None:
+                runtime.status.handle.ambient_light_raw = telemetry.handle.ambient_light_raw
+            if telemetry.handle.dark is not None:
+                runtime.status.handle.dark = telemetry.handle.dark
             if telemetry.handle.gps is not None:
                 runtime.status.handle.gps = telemetry.handle.gps
             if telemetry.collar.battery_pct is not None:
@@ -111,8 +121,14 @@ class InMemoryRepository:
                 runtime.status.collar.motion_state = telemetry.collar.motion_state
             if telemetry.collar.steps is not None:
                 runtime.status.collar.steps = telemetry.collar.steps
+            if telemetry.collar.accel_peak_g is not None:
+                runtime.status.collar.accel_peak_g = telemetry.collar.accel_peak_g
+            if telemetry.collar.confidence_pct is not None:
+                runtime.status.collar.confidence_pct = telemetry.collar.confidence_pct
             if telemetry.collar.rssi_dbm is not None:
                 runtime.status.collar.rssi_dbm = telemetry.collar.rssi_dbm
+            if telemetry.collar.temp_c_x10 is not None:
+                runtime.status.collar.temp_c_x10 = telemetry.collar.temp_c_x10
             if telemetry.collar.distance_est_m is not None:
                 runtime.status.collar.distance_est_m = telemetry.collar.distance_est_m
             return telemetry

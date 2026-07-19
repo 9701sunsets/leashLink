@@ -17,14 +17,22 @@ export interface DeviceStatus {
   handle: {
     battery_pct: number;
     tension_n: number;
+    tension_peak_n?: number;
+    tension_stable?: boolean;
     leash_locked: boolean;
-    gps: GpsFix;
+    ambient_light_lux?: number;
+    ambient_light_raw?: number;
+    dark?: boolean;
+    gps?: GpsFix;
   };
   collar: {
     battery_pct: number;
     motion_state: MotionState;
     steps: number;
+    accel_peak_g?: number;
+    confidence_pct?: number;
     rssi_dbm: number;
+    temp_c_x10?: number;
     distance_est_m: number;
   };
 }
@@ -76,4 +84,3 @@ export interface DeviceConfig {
     event_immediate: boolean;
   };
 }
-

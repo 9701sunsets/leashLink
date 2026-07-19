@@ -3,6 +3,8 @@ from __future__ import annotations
 from fastapi import APIRouter, HTTPException
 
 from app.models import DeviceRegisterRequest, DeviceRegisterResponse, DeviceStatusResponse, FenceConfigRequest
+from app.mqtt.publisher import publisher
+from app.models import utc_now_ms
 from app.services.config_service import set_fence
 from app.services.device_service import get_status, register_device
 
@@ -26,3 +28,16 @@ def device_status_endpoint(pair_id: str) -> DeviceStatusResponse:
 @router.put("/{pair_id}/fence")
 def fence_endpoint(pair_id: str, payload: FenceConfigRequest):
     return set_fence(pair_id, payload)
+
+
+@router.post("/{pair_id}/commands")
+def command_endpoint(pair_id: str, payload: dict):
+    cmd_id = str(payload.get("cmd_id") or f"cmd-{utc_now_ms()}")
+    command = {
+        "cmd_id": cmd_id,
+        "type": payload.get("type"),
+        "ts_ms": utc_now_ms(),
+        "payload": payload.get("payload") or {},
+    }
+    publisher.publish(f"leashlink/{pair_id}/cmd", command, qos=1)
+    return {"accepted": True, "cmd_id": cmd_id}

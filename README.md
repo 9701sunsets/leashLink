@@ -57,7 +57,10 @@ idf.py -p COM5 monitor
 - Python虚拟环境下进入`backend/`
 - 启动mosquitto+SQL的Docker容器
 ```bash
-uvicorn app.main:app --reload
+cd D:\ESP\leashLink\backend
+$env:MQTT_HOST="192.168.216.159"
+$env:MQTT_PORT="1883"
+uvicorn app.main:app --reload --host 127.0.0.1 --port 8000 --log-level info --access-log
 ```
 
 ### 前端

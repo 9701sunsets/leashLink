@@ -130,6 +130,7 @@ static void init_full_handle(void)
     ESP_ERROR_CHECK(oled_init());
     ESP_ERROR_CHECK(buzzer_init());
     ESP_ERROR_CHECK(button_driver_init());
+    ESP_ERROR_CHECK(light_sensor_init());
     ESP_ERROR_CHECK(motor_init());
     ESP_ERROR_CHECK(leash_control_init());
     ESP_ERROR_CHECK(tension_service_init());

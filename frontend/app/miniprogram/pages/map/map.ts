@@ -17,7 +17,7 @@ Page({
   },
 
   renderMap() {
-    const gps = deviceStore.status.handle.gps;
+    const gps = deviceStore.status.handle.gps || { lat: 32.0609, lng: 118.778, fix: false, accuracy_m: 0 };
     const collar = deviceStore.status.collar;
     const latitude = gps.lat;
     const longitude = gps.lng;
@@ -68,4 +68,3 @@ Page({
     wx.showToast({ title: "围栏已保存", icon: "success" });
   }
 });
-

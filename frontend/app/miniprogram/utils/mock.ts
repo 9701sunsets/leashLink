@@ -11,7 +11,12 @@ export const mockStatus: DeviceStatus = {
   handle: {
     battery_pct: 82,
     tension_n: 8.4,
+    tension_peak_n: 22.5,
+    tension_stable: true,
     leash_locked: false,
+    ambient_light_lux: 228,
+    ambient_light_raw: 915,
+    dark: true,
     gps: {
       lat: 32.0609,
       lng: 118.778,
@@ -23,7 +28,10 @@ export const mockStatus: DeviceStatus = {
     battery_pct: 76,
     motion_state: "walk",
     steps: 4521,
+    accel_peak_g: 1.4,
+    confidence_pct: 80,
     rssi_dbm: -58,
+    temp_c_x10: 386,
     distance_est_m: 3.2
   }
 };
@@ -105,4 +113,3 @@ export const mockTrack = [
   { latitude: 32.0615, longitude: 118.779 },
   { latitude: 32.0618, longitude: 118.7795 }
 ];
-

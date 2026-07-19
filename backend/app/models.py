@@ -39,7 +39,12 @@ class GPSLocation(BaseModel):
 class HandleStatus(BaseModel):
     battery_pct: int = 0
     tension_n: float = 0.0
+    tension_peak_n: float = 0.0
+    tension_stable: bool = False
     leash_locked: bool = False
+    ambient_light_lux: Optional[float] = None
+    ambient_light_raw: Optional[int] = None
+    dark: Optional[bool] = None
     gps: Optional[GPSLocation] = None
 
 # 设备状态响应模型
@@ -47,7 +52,10 @@ class CollarStatus(BaseModel):
     battery_pct: int = 0
     motion_state: str = "unknown"
     steps: int = 0
+    accel_peak_g: Optional[float] = None
+    confidence_pct: Optional[int] = None
     rssi_dbm: Optional[int] = None
+    temp_c_x10: Optional[int] = None
     distance_est_m: Optional[float] = None
 
 # 设备状态响应模型
@@ -62,9 +70,13 @@ class DeviceStatusResponse(BaseModel):
 # 设备遥测数据模型
 class HandleTelemetryInput(BaseModel):
     tension_n: Optional[float] = None
+    tension_peak_n: Optional[float] = None
+    tension_stable: Optional[bool] = None
     leash_length_m: Optional[float] = None
     leash_locked: Optional[bool] = None
     ambient_light_lux: Optional[float] = None
+    ambient_light_raw: Optional[int] = None
+    dark: Optional[bool] = None
     battery_pct: Optional[int] = None
     gps: Optional[GPSLocation] = None
 

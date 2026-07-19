@@ -22,6 +22,15 @@ typedef enum {
 } ll_motion_state_t;
 
 typedef enum {
+    LL_FEEDBACK_STOP = 1,
+    LL_FEEDBACK_WARNING = 2,
+    LL_FEEDBACK_DANGER = 3,
+    LL_FEEDBACK_FIND_DOG = 4,
+    LL_FEEDBACK_SET_LED_PATTERN = 5,
+    LL_FEEDBACK_ENTER_LOW_POWER = 6,
+} ll_feedback_cmd_type_t;
+
+typedef enum {
     LL_LEASH_UNLOCKED = 0,// 牵引解锁
     LL_LEASH_LOCKED,// 牵引锁定
     LL_LEASH_RELEASING,// 牵引释放中
@@ -64,6 +73,7 @@ typedef struct {
     uint8_t confidence_pct;// 置信度（百分比）
     int8_t rssi_dbm;// 接收信号强度指示（dBm）
     uint8_t battery_pct;// 电池电量（百分比）
+    int16_t temp_c_x10;// 温度（摄氏度 * 10）
     int64_t ts_ms;// 时间戳（毫秒）
 } ll_collar_telemetry_t;
 

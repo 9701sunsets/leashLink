@@ -22,6 +22,8 @@ let activeDogId = 1;
 const state = { mode: "leash" };
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => Array.from(document.querySelectorAll(selector));
+const BACKEND_API_BASE = "http://127.0.0.1:8000/api/v1";
+const LIVE_PAIR_ID = "LL-P-0001";
 
 const walkRecords = [
   ["今天", "45 min", "3.2 km", "128 kcal", "达成 60%"],
@@ -215,6 +217,61 @@ function updateVitals(randomize = false) {
   renderAll();
 }
 
+function motionText(motion) {
+  return {
+    idle: "静止",
+    walk: "行走",
+    run: "奔跑",
+    burst: "突发拉扯",
+    shake: "摇晃",
+    unknown: "未知",
+  }[motion] || "未知";
+}
+
+function applyBackendStatus(status) {
+  if (!status || !status.handle || !status.collar) return;
+
+  const dog = activeDog();
+  const tension = Number(status.handle.tension_n || 0);
+  const distance = Number(status.collar.distance_est_m || 0);
+  const temp = status.collar.temp_c_x10 == null ? null : Number(status.collar.temp_c_x10) / 10;
+  const light = status.handle.ambient_light_lux;
+  const motion = motionText(status.collar.motion_state);
+  const riskyTension = tension >= 20 || status.handle.leash_locked;
+
+  $("#speedNow").textContent = status.collar.motion_state === "run" ? "6.4" : status.collar.motion_state === "walk" ? "3.8" : "0.0";
+  $("#tempNow").textContent = temp == null ? $("#tempNow").textContent : temp.toFixed(1);
+  $("#distanceNow").textContent = distance.toFixed(1);
+  $("#tensionNow").textContent = tension.toFixed(1);
+  $("#paceLabel").textContent = motion;
+  $("#tempLabel").textContent = temp != null && temp > 39.2 ? "偏高" : "正常";
+  $("#distanceLabel").textContent = distance > 10 ? "偏远" : "安全";
+  $("#fenceNow").textContent = `${distance.toFixed(1)} m`;
+  $("#fenceHint").textContent = distance > 10 ? "接近边界" : "安全";
+  $("#tensionHint").textContent = riskyTension ? "偏紧" : "正常";
+  $("#lockState").textContent = status.handle.leash_locked ? "已锁定" : "未锁定";
+
+  dog.walkMinutes = Math.max(dog.walkMinutes, Math.round(Number(status.collar.steps || 0) / 100));
+  dog.distanceKm = Math.max(dog.distanceKm, Number((distance / 1000).toFixed(2)));
+
+  updateHealthPill(Number($("#heartRateNow").textContent), Number($("#tempNow").textContent), distance, riskyTension);
+  drawSpeedLine(Number($("#speedNow").textContent));
+  renderAll();
+  if (light != null) {
+    $("#careTip").textContent = status.handle.dark ? `环境偏暗，光照约 ${light} lux` : `光照约 ${light} lux，适合观察路面`;
+  }
+}
+
+async function refreshBackendStatus() {
+  try {
+    const response = await fetch(`${BACKEND_API_BASE}/devices/${LIVE_PAIR_ID}/status`, { cache: "no-store" });
+    if (!response.ok) return;
+    applyBackendStatus(await response.json());
+  } catch {
+    // Keep the local prototype data when the backend is not running.
+  }
+}
+
 function updateHealthPill(heart, temp, distance, riskyTension) {
   const pill = $("#healthPill");
   pill.classList.remove("good", "warn", "danger");
@@ -392,3 +449,5 @@ bindEvents();
 renderAll();
 updateVitals(false);
 checkAssistantStatus();
+refreshBackendStatus();
+setInterval(refreshBackendStatus, 1000);
