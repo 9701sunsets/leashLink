@@ -67,6 +67,12 @@ uvicorn app.main:app --reload --host 127.0.0.1 --port 8000 --log-level info --ac
 
 微信小程序APP
 
+Web端
+```bash
+node server.mjs
+```
+打开`http://127.0.0.1:4173/`
+
 ## 测试
 
 测试动作：

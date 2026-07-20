@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from contextlib import contextmanager
+from pathlib import Path
 from typing import Iterator, Optional
 
 
@@ -25,3 +26,11 @@ class PostgresStore:
     def connection(self) -> Iterator[object]:
         with self._psycopg.connect(self.dsn) as conn:
             yield conn
+
+    def migrate(self) -> None:
+        migrations_dir = Path(__file__).with_name("migrations")
+        with self.connection() as conn:
+            with conn.cursor() as cur:
+                for migration in sorted(migrations_dir.glob("*.sql")):
+                    cur.execute(migration.read_text(encoding="utf-8"))
+            conn.commit()

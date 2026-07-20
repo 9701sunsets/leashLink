@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import logging
+import os
 from collections import defaultdict
 from dataclasses import dataclass
 from threading import RLock
@@ -296,5 +298,26 @@ class InMemoryRepository:
             runtime.config_version += 1
             return runtime.config_version
 
+logger = logging.getLogger("uvicorn.error")
 
-repository = InMemoryRepository()
+
+def create_repository():
+    if os.getenv("DATABASE_URL"):
+        try:
+            from app.db.postgres import PostgresStore
+            from app.db.postgres_repository import PostgresRepository
+
+            store = PostgresStore()
+            if os.getenv("AUTO_MIGRATE_DATABASE", "1") not in {"0", "false", "False"}:
+                store.migrate()
+            logger.info("Using PostgreSQL repository")
+            return PostgresRepository(store)
+        except Exception as exc:
+            if os.getenv("REPOSITORY_FALLBACK_TO_MEMORY", "1") in {"0", "false", "False"}:
+                raise
+            logger.warning("PostgreSQL repository unavailable, falling back to memory: %s", exc)
+    logger.info("Using in-memory repository")
+    return InMemoryRepository()
+
+
+repository = create_repository()
