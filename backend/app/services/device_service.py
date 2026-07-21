@@ -13,6 +13,23 @@ from app.models import (
 )
 from app.services.session_service import build_session_id
 
+LIGHT_ADC_MAX_RAW = 4095
+LIGHT_RAW_TO_LUX_DIVISOR = 4.0
+
+
+def _lux_from_inverse_raw(raw: int) -> float:
+    clamped_raw = max(0, min(LIGHT_ADC_MAX_RAW, int(raw)))
+    return round((LIGHT_ADC_MAX_RAW - clamped_raw) / LIGHT_RAW_TO_LUX_DIVISOR, 2)
+
+
+def _normalize_light(payload: TelemetryUpsertRequest) -> TelemetryUpsertRequest:
+    if payload.handle.ambient_light_raw is None:
+        return payload
+
+    handle = payload.handle.model_dump()
+    handle["ambient_light_lux"] = _lux_from_inverse_raw(payload.handle.ambient_light_raw)
+    return payload.model_copy(update={"handle": payload.handle.__class__.model_validate(handle)})
+
 # 设备注册服务模块
 def register_device(payload: DeviceRegisterRequest) -> DeviceRegisterResponse:
     record = repository.register_device(payload.handle_id, payload.collar_id, payload.hardware)
@@ -31,6 +48,7 @@ def get_status(pair_id: str) -> DeviceStatusResponse:
 
 # 设备遥测数据上报服务模块
 def upsert_telemetry(payload: TelemetryUpsertRequest) -> StoredTelemetry:
+    payload = _normalize_light(payload)
     telemetry = StoredTelemetry.model_validate(payload.model_dump())
     repository.upsert_telemetry(telemetry)
     return telemetry
