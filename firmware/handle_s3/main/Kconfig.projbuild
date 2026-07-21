@@ -35,6 +35,13 @@ config LEASHLINK_WIFI_PASSWORD
 
 config LEASHLINK_MQTT_URI
     string "MQTT broker URI"
-    default "mqtt://192.168.43.1:1883"
+    default "mqtt://192.168.216.159:1883"
+
+config LEASHLINK_HANDLE_MOTOR_ACTIVE_LOW
+    bool "Handle vibration motor driver is active-low"
+    default y
+    help
+        Enable when the handle vibration motor module runs while the GPIO is low.
+        Disable it for MOSFET/driver boards that vibrate on GPIO high.
 
 endmenu
