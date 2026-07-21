@@ -60,6 +60,8 @@ idf.py -p COM5 monitor
 cd D:\ESP\leashLink\backend
 $env:MQTT_HOST="192.168.216.159"
 $env:MQTT_PORT="1883"
+$env:DATABASE_URL="postgresql://leashlink:leashlink123@127.0.0.1:5432/leashlink"
+$env:AUTO_MIGRATE_DATABASE="1"
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000 --log-level info --access-log
 ```
 
