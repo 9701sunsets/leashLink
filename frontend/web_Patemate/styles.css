@@ -331,7 +331,7 @@ h2 {
 }
 
 .home-grid {
-  grid-template-columns: 1.35fr repeat(4, minmax(136px, 1fr));
+  grid-template-columns: 1.35fr repeat(3, minmax(136px, 1fr));
 }
 
 .home-row,

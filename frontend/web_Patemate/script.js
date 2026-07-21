@@ -255,7 +255,6 @@ function updateVitals(randomize = false) {
   const dog = activeDog();
   const speed = randomize ? (2.2 + Math.random() * 7.8).toFixed(1) : $("#speedNow").textContent;
   const heart = randomize ? Math.round(86 + Number(speed) * 8 + Math.random() * 18) : Number($("#heartRateNow").textContent);
-  const temp = randomize ? (38.1 + Math.random() * 1.1).toFixed(1) : $("#tempNow").textContent;
   const distance = state.mode === "free" ? (2 + Math.random() * 11).toFixed(1) : (1.2 + Math.random() * 3.4).toFixed(1);
   const tension = state.mode === "leash" ? (5 + Math.random() * 19).toFixed(1) : "0.0";
   const minuteCalories = estimateMinuteCalories(Number(speed));
@@ -266,20 +265,18 @@ function updateVitals(randomize = false) {
 
   $("#speedNow").textContent = speed;
   $("#heartRateNow").textContent = heart;
-  $("#tempNow").textContent = temp;
   $("#distanceNow").textContent = distance;
   $("#tensionNow").textContent = tension;
   $("#avgHeart").textContent = Math.round((heart + 112) / 2);
   $("#paceLabel").textContent = Number(speed) > 6 ? "奔跑" : Number(speed) > 3 ? "快走" : "慢走";
   $("#heartLabel").textContent = heart > 160 ? "偏高" : "正常";
-  $("#tempLabel").textContent = Number(temp) > 39.2 ? "偏高" : "正常";
   $("#distanceLabel").textContent = Number(distance) > 10 ? "偏远" : "安全";
   $("#fenceHint").textContent = Number(distance) > 10 ? "接近边界" : "安全";
 
   const riskyTension = Number(tension) > 15;
   $("#tensionHint").textContent = riskyTension ? "偏紧" : "正常";
   $("#lockState").textContent = riskyTension ? "提醒中" : "未锁定";
-  updateHealthPill(heart, Number(temp), Number(distance), riskyTension);
+  updateHealthPill(heart, Number(distance), riskyTension);
   drawHeartLine(heart);
   drawSpeedLine(Number(speed));
   renderAll();
@@ -302,17 +299,14 @@ function applyBackendStatus(status) {
   const dog = activeDog();
   const tension = Number(status.handle.tension_n || 0);
   const distance = Number(status.collar.distance_est_m || 0);
-  const temp = status.collar.temp_c_x10 == null ? null : Number(status.collar.temp_c_x10) / 10;
   const light = status.handle.ambient_light_lux;
   const motion = motionText(status.collar.motion_state);
   const riskyTension = tension >= 20 || status.handle.leash_locked;
 
   $("#speedNow").textContent = status.collar.motion_state === "run" ? "6.4" : status.collar.motion_state === "walk" ? "3.8" : "0.0";
-  $("#tempNow").textContent = temp == null ? $("#tempNow").textContent : temp.toFixed(1);
   $("#distanceNow").textContent = distance.toFixed(1);
   $("#tensionNow").textContent = tension.toFixed(1);
   $("#paceLabel").textContent = motion;
-  $("#tempLabel").textContent = temp != null && temp > 39.2 ? "偏高" : "正常";
   $("#distanceLabel").textContent = distance > 10 ? "偏远" : "安全";
   $("#fenceNow").textContent = `${distance.toFixed(1)} m`;
   $("#fenceHint").textContent = distance > 10 ? "接近边界" : "安全";
@@ -322,7 +316,7 @@ function applyBackendStatus(status) {
   dog.walkMinutes = Math.max(dog.walkMinutes, Math.round(Number(status.collar.steps || 0) / 100));
   dog.distanceKm = Math.max(dog.distanceKm, Number((distance / 1000).toFixed(2)));
 
-  updateHealthPill(Number($("#heartRateNow").textContent), Number($("#tempNow").textContent), distance, riskyTension);
+  updateHealthPill(Number($("#heartRateNow").textContent), distance, riskyTension);
   drawSpeedLine(Number($("#speedNow").textContent));
   renderAll();
   if (light != null) {
@@ -362,7 +356,6 @@ function applyBackendStatusAligned(status) {
   const distance = Number(status.collar.distance_est_m || 0);
   const speed = estimateSpeedFromTelemetry(status);
   const heart = estimateHeartFromRaw(status.handle.heart);
-  const temp = status.collar.temp_c_x10 == null ? null : Number(status.collar.temp_c_x10) / 10;
   const light = status.handle.ambient_light_lux;
   const riskyTension = tension >= 20 || status.handle.leash_locked;
 
@@ -374,20 +367,18 @@ function applyBackendStatusAligned(status) {
 
   $("#speedNow").textContent = speed.toFixed(1);
   $("#heartRateNow").textContent = heart == null ? "--" : heart;
-  $("#tempNow").textContent = temp == null ? $("#tempNow").textContent : temp.toFixed(1);
   $("#distanceNow").textContent = distance.toFixed(1);
   $("#tensionNow").textContent = tension.toFixed(1);
   $("#avgHeart").textContent = heart == null ? "--" : heart;
   $("#paceLabel").textContent = motionText(status.collar.motion_state);
   $("#heartLabel").textContent = status.handle.heart?.ok ? `IR ${status.handle.heart.ir}` : "未接触";
-  $("#tempLabel").textContent = temp != null && temp > 39.2 ? "偏高" : "正常";
   $("#distanceLabel").textContent = distance > 10 ? "偏远" : "安全";
   $("#fenceNow").textContent = `${distance.toFixed(1)} m`;
   $("#fenceHint").textContent = distance > 10 ? "接近边界" : "安全";
   $("#tensionHint").textContent = riskyTension ? "偏紧" : "正常";
   $("#lockState").textContent = status.handle.leash_locked ? "已锁定" : "未锁定";
 
-  updateHealthPill(heart || 0, Number($("#tempNow").textContent), distance, riskyTension);
+  updateHealthPill(heart || 0, distance, riskyTension);
   drawHeartLine(heart || 100);
   drawSpeedLine(speed);
 
@@ -398,16 +389,16 @@ function applyBackendStatusAligned(status) {
   }
 }
 
-function updateHealthPill(heart, temp, distance, riskyTension) {
+function updateHealthPill(heart, distance, riskyTension) {
   const pill = $("#healthPill");
   pill.classList.remove("good", "warn", "danger");
-  if (heart > 175 || temp > 39.5 || distance > 15) {
+  if (heart > 175 || distance > 15) {
     pill.textContent = "关注";
     pill.classList.add("danger");
     $("#todayAlertCount").textContent = "3 条";
     return;
   }
-  if (riskyTension || heart > 155 || temp > 39.1 || distance > 10) {
+  if (riskyTension || heart > 155 || distance > 10) {
     pill.textContent = "提醒";
     pill.classList.add("warn");
     $("#todayAlertCount").textContent = "2 条";
@@ -508,7 +499,6 @@ function currentMetrics() {
   return {
     speed: $("#speedNow").textContent,
     heartRate: $("#heartRateNow").textContent,
-    temperature: $("#tempNow").textContent,
     distance: $("#distanceNow").textContent,
     tension: $("#tensionNow").textContent,
     pace: $("#paceLabel").textContent,
@@ -534,7 +524,7 @@ function localAssistantReply(question) {
   } else if (question.includes("心率") || lower.includes("heart")) {
     parts.push(`当前心率约 ${metrics.heartRate} bpm。如果持续偏高，先降速、休息和补水，等呼吸平稳后再继续。`);
   } else if (question.includes("体温") || question.includes("热")) {
-    parts.push(`当前体温约 ${metrics.temperature} °C。高温天气建议缩短散步、避开暴晒，并观察喘气和精神状态。`);
+    parts.push("当前今日页不再展示体温数据。高温天气建议缩短散步、避开暴晒，并观察喘气和精神状态。");
   } else {
     parts.push(`结合当前速度 ${metrics.speed} km/h、状态 ${metrics.pace}，建议以舒适稳定为主，不要突然加大强度。`);
   }
