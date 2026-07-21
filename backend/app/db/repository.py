@@ -298,6 +298,12 @@ class InMemoryRepository:
             runtime.config_version += 1
             return runtime.config_version
 
+    def get_config(self, pair_id: str) -> Optional[DeviceConfigRequest]:
+        runtime = self._runtime.get(pair_id)
+        if runtime is None:
+            return None
+        return runtime.config
+
 logger = logging.getLogger("uvicorn.error")
 
 

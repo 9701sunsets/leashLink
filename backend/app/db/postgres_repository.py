@@ -446,3 +446,12 @@ class PostgresRepository:
                 version = int(cur.fetchone()["config_version"])
             conn.commit()
         return version
+
+    def get_config(self, pair_id: str) -> Optional[DeviceConfigRequest]:
+        with self.store.connection() as conn:
+            with conn.cursor(row_factory=self._dict_row) as cur:
+                cur.execute("SELECT config FROM device_configs WHERE pair_id = %s", (pair_id,))
+                row = cur.fetchone()
+        if not row or not row.get("config"):
+            return None
+        return DeviceConfigRequest.model_validate(row["config"])

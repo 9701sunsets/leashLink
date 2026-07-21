@@ -15,12 +15,20 @@ export async function getDeviceStatus(pairId: string): Promise<DeviceStatus> {
 
 export async function getWalkReport(pairId: string): Promise<WalkReport> {
   if (USE_MOCK) return mockReport;
-  return request<WalkReport>(`/devices/${pairId}/report/today`);
+  try {
+    return await request<WalkReport>(`/devices/${pairId}/report/today`);
+  } catch {
+    return mockReport;
+  }
 }
 
 export async function getDeviceConfig(pairId: string): Promise<DeviceConfig> {
   if (USE_MOCK) return mockConfig;
-  return request<DeviceConfig>(`/devices/${pairId}/config`);
+  try {
+    return await request<DeviceConfig>(`/devices/${pairId}/config`);
+  } catch {
+    return mockConfig;
+  }
 }
 
 export async function updateDeviceConfig(pairId: string, config: DeviceConfig): Promise<{ saved: boolean; config_version: number }> {

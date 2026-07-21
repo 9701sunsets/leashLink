@@ -2,7 +2,7 @@
   "libVersion": "3.16.2",
   "projectname": "leashLink_front",
   "setting": {
-    "urlCheck": true,
+    "urlCheck": false,
     "coverView": true,
     "lazyloadPlaceholderEnable": false,
     "skylineRenderEnable": false,

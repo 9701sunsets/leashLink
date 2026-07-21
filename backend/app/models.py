@@ -194,6 +194,17 @@ class EventListResponse(BaseModel):
     items: list[EventSummary]
     next_cursor: Optional[str] = None
 
+
+class WalkReportResponse(BaseModel):
+    session_id: str
+    duration_min: int = 0
+    distance_km: float = 0.0
+    steps: int = 0
+    max_tension_n: float = 0.0
+    burst_count: int = 0
+    health_state: str = "healthy"
+    tension_series: list[float] = Field(default_factory=list)
+
 # 设备围栏配置模型
 class FenceCenter(BaseModel):
     lat: float

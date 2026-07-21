@@ -3,6 +3,7 @@ from __future__ import annotations
 from fastapi import APIRouter, HTTPException
 
 from app.models import (
+    DeviceConfigRequest,
     DeviceRegisterRequest,
     DeviceRegisterResponse,
     DeviceStatusResponse,
@@ -11,6 +12,7 @@ from app.models import (
     DogProfileListResponse,
     DogProfileUpdateRequest,
     FenceConfigRequest,
+    WalkReportResponse,
 )
 from app.mqtt.publisher import publisher
 from app.models import utc_now_ms
@@ -18,7 +20,9 @@ from app.services.config_service import set_fence
 from app.services.device_service import (
     create_dog_profile,
     delete_dog_profile,
+    get_device_config,
     get_status,
+    get_today_report,
     list_dog_profiles,
     register_device,
     update_dog_profile,
@@ -39,6 +43,16 @@ def device_status_endpoint(pair_id: str) -> DeviceStatusResponse:
         return get_status(pair_id)
     except KeyError as exc:
         raise HTTPException(status_code=404, detail="device not found") from exc
+
+
+@router.get("/{pair_id}/report/today", response_model=WalkReportResponse)
+def today_report_endpoint(pair_id: str) -> WalkReportResponse:
+    return get_today_report(pair_id)
+
+
+@router.get("/{pair_id}/config", response_model=DeviceConfigRequest)
+def device_config_endpoint(pair_id: str) -> DeviceConfigRequest:
+    return get_device_config(pair_id)
 
 
 @router.get("/{pair_id}/dogs", response_model=DogProfileListResponse)
