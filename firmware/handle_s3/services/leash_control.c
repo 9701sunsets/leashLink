@@ -24,6 +24,9 @@ esp_err_t leash_control_init(void)
 esp_err_t leash_control_lock(uint32_t hold_ms)
 {
     (void)hold_ms;
+    if (s_state == LL_LEASH_LOCKED) {
+        return ESP_OK;
+    }
     ESP_LOGW(TAG, "lock leash");
     s_state = LL_LEASH_LOCKED;
     return servo_lock();
@@ -34,6 +37,9 @@ esp_err_t leash_control_lock(uint32_t hold_ms)
  */
 esp_err_t leash_control_unlock(void)
 {
+    if (s_state == LL_LEASH_UNLOCKED) {
+        return ESP_OK;
+    }
     ESP_LOGI(TAG, "unlock leash");
     s_state = LL_LEASH_UNLOCKED;
     return servo_unlock();
@@ -46,4 +52,3 @@ ll_leash_state_t leash_control_get_state(void)
 {
     return s_state;
 }
-

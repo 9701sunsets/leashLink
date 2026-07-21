@@ -50,7 +50,7 @@ esp_err_t hx711_read_raw(int32_t *raw)
     while (gpio_get_level(HANDLE_HX711_DOUT_GPIO) != 0) {
         esp_rom_delay_us(50);
         wait_us += 50;
-        if (wait_us > 100000) {
+        if (wait_us > 150000) {
             return ESP_ERR_TIMEOUT;
         }
     }
@@ -126,4 +126,3 @@ esp_err_t hx711_tare(uint16_t samples)
     ESP_LOGI(TAG, "tare offset=%ld", (long)s_cal.zero_offset);
     return ESP_OK;
 }
-

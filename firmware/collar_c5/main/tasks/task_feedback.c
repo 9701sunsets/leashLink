@@ -1,6 +1,7 @@
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "sdkconfig.h"
 
 #include "feedback_service.h"
 #include "motion_service.h"
@@ -15,6 +16,7 @@ void task_feedback(void *arg)
 {
     (void)arg;
     while (true) {
+#if CONFIG_COLLAR_ENABLE_LOCAL_BURST_FEEDBACK
         if (motion_service_get_state() == LL_MOTION_BURST) {
             ll_control_cmd_t cmd = {
                 .cmd_id = 1,
@@ -25,6 +27,7 @@ void task_feedback(void *arg)
             };
             feedback_service_handle_cmd(&cmd);
         }
+#endif
         ESP_LOGD(TAG, "feedback task running");
         vTaskDelay(pdMS_TO_TICKS(300));
     }

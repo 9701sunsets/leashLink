@@ -21,6 +21,7 @@ static const char *TAG = "task_safety";
 void task_safety(void *arg)
 {
     (void)arg;
+    ll_safety_state_t last_actuated_state = LL_SAFETY_SAFE;
     while (true) {
         ll_tension_sample_t tension = tension_service_get_latest();
         ll_collar_telemetry_t collar = espnow_handle_get_collar();
@@ -42,10 +43,13 @@ void task_safety(void *arg)
         ESP_ERROR_CHECK(safety_service_eval(&input, &event));
 
         ll_safety_state_t state = safety_service_get_state();
-        if (state == LL_SAFETY_BURST_ALERT || state == LL_SAFETY_LOCKED) {
-            leash_control_lock(1000);
-        } else if (state == LL_SAFETY_SAFE || state == LL_SAFETY_RECOVERY) {
-            leash_control_unlock();
+        if (state != last_actuated_state) {
+            if (state == LL_SAFETY_BURST_ALERT || state == LL_SAFETY_LOCKED) {
+                leash_control_lock(1000);
+            } else if (state == LL_SAFETY_SAFE || state == LL_SAFETY_RECOVERY) {
+                leash_control_unlock();
+            }
+            last_actuated_state = state;
         }
 
         if (event.type == LL_EVENT_BURST_PULL) {

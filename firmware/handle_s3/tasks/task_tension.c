@@ -26,6 +26,6 @@ void task_tension(void *arg)
                 last_warn_ms = now_ms;
             }
         }
-        vTaskDelay(pdMS_TO_TICKS(50));
+        vTaskDelay(pdMS_TO_TICKS(120));
     }
 }

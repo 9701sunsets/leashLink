@@ -22,4 +22,18 @@ config COLLAR_ENABLE_SPEAKER_GPIO_TEST
     help
         Keep disabled until PA_CTL/PDM_P/PDM_N are confirmed from the board schematic.
 
+config COLLAR_ENABLE_LOCAL_BURST_FEEDBACK
+    bool "Enable local vibration/buzzer when collar detects burst"
+    default n
+    help
+        Keep disabled during link bring-up. The handle should own safety decisions
+        and send CONTROL_CMD feedback after fusing tension and collar motion.
+
+config COLLAR_VIBRATION_ACTIVE_LOW
+    bool "Collar vibration motor driver is active-low"
+    default y
+    help
+        Enable when the vibration module starts running while the GPIO is low.
+        Disable it for MOSFET/driver boards that vibrate on GPIO high.
+
 endmenu

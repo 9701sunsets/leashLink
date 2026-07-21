@@ -15,7 +15,7 @@ config LEASHLINK_LINK_BRINGUP_ONLY
 
 config LEASHLINK_HANDLE_MODULE_BRINGUP_ONLY
     bool "Handle connected modules bring-up only"
-    default y
+    default n
     help
         Enable this for the current handle_s3 wiring: servo, battery, light, GPS,
         buzzer, heart sensor, OLED, and ESP-NOW/BLE collar link. It skips HX711,
